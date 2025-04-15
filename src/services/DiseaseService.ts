@@ -3,6 +3,7 @@ import { AdviceCommentRepository } from "../repositories/AdviceCommentRepository
 import { Disease } from "../entities/Disease";
 import { AdviceComment } from "../entities/AdviceComment";
 import { IDisease } from "../interfaces/IDisease";
+import logger from "../utils/logger";
 
 export class DiseaseService {
   private diseaseRepository: DiseaseRepository;
@@ -14,7 +15,9 @@ export class DiseaseService {
   }
 
   async getAllDiseases(): Promise<IDisease[]> {
-    return this.diseaseRepository.findAll();
+       const getDisease =  this.diseaseRepository.findAll();
+    console.log("Get disease: ", getDisease)
+    return getDisease
   }
 
   async getDiseaseById(id: number): Promise<IDisease | null> {

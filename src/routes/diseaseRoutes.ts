@@ -6,7 +6,7 @@ const router = Router();
 const diseaseController = new DiseaseController();
 
 // Public routes
-router.get("/", diseaseController.getAllDiseases);
+router.get("/", diseaseController.getAllDiseases.bind(diseaseController));
 router.get("/:id", diseaseController.getDiseaseById);
 
 // Protected routes

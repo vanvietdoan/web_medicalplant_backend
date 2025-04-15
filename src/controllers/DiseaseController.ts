@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { DiseaseService } from "../services/DiseaseService";
 import { IDisease } from "../interfaces/IDisease";
+import logger from "../utils/logger";
 
 export class DiseaseController {
   private diseaseService: DiseaseService;
@@ -12,8 +13,10 @@ export class DiseaseController {
   async getAllDiseases(req: Request, res: Response) {
     try {
       const diseases = await this.diseaseService.getAllDiseases();
+      logger.info(`Get disease data: ${req.query}`);
       res.json(diseases);
     } catch (error) {
+      logger.info('Fail get all disease data')
       res.status(500).json({ message: "Error fetching diseases", error });
     }
   }

@@ -18,8 +18,6 @@ export class Disease extends BaseEntity implements IDisease {
   @Column()
   symptoms!: string;
 
-  @Column()
-  treatment!: string;
 
   @OneToMany(() => PlantDisease, plantDisease => plantDisease.disease)
   plants!: PlantDisease[];

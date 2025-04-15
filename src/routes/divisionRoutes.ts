@@ -9,7 +9,7 @@ const divisionController = new DivisionController();
 router.get("/search", divisionController.searchDivisions.bind(divisionController));
 
 // Get all divisions
-router.get("/", auth, divisionController.getAllDivisions.bind(divisionController));
+router.get("/", divisionController.getAllDivisions.bind(divisionController));
 
 // Get division by ID
 router.get("/:id", auth, divisionController.getDivisionById.bind(divisionController));

@@ -18,7 +18,7 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction) 
       throw new Error("No authentication token provided");
     }
 
-    // Check if token is blacklisted
+    // Check if token is blacklisted to check logout(time)
     if (tokenBlacklist.isBlacklisted(token)) {
       throw new Error("Token has been invalidated");
     }

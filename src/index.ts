@@ -8,10 +8,10 @@ import reportRoutes from "./routes/reportRoutes";
 import authRoutes from "./routes/authRoutes";
 import uploadRoutes from './routes/uploadRoutes';
 import divisionRoutes from './routes/divisionRoutes';
+
 import config from "./utils/config";
 import logger from "./utils/logger";
 import path from "path";
-import cookieParser from 'cookie-parser';
 
 
 const app = express();
@@ -21,7 +21,6 @@ const port = config.port;
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", authRoutes); // Add this line to use the userRoutes for /api/auth

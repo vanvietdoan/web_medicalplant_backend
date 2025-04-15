@@ -7,7 +7,6 @@ export interface IDisease {
   name: string;
   description: string;
   symptoms: string;
-  treatment: string;
   created_at: Date;
   updated_at: Date;
 } 

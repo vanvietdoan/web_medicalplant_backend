@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
+import { Service } from "typedi";
 import { GenusService } from "../services/GenusService";
 import { Genus } from "../entities/Genus";
 
+@Service()
 export class GenusController {
-  private genusService: GenusService;
+  constructor(
+    private genusService: GenusService
+  ) {}
 
-  constructor() {
-    this.genusService = new GenusService();
-  }
 
   async getAllGenera(req: Request, res: Response): Promise<void> {
     try {
       const genera = await this.genusService.getAllGenera();
       res.json(genera);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching genera", error });
+      res.status(500).json({ message: "Error fetching genera", error }); return;
     }
   }
 
@@ -24,13 +25,13 @@ export class GenusController {
       const genus = await this.genusService.getGenusById(id);
       
       if (!genus) {
-        res.status(404).json({ message: "Genus not found" });
+        res.status(404).json({ message: "Genus not found" }); return;
         return;
       }
       
       res.json(genus);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching genus", error });
+      res.status(500).json({ message: "Error fetching genus", error }); return;
     }
   }
 
@@ -41,14 +42,14 @@ export class GenusController {
       // Validate input data
       const validationErrors = await this.genusService.validateGenusData(genusData);
       if (validationErrors.length > 0) {
-        res.status(400).json({ message: "Validation failed", errors: validationErrors });
+        res.status(400).json({ message: "Validation failed", errors: validationErrors }); return;
         return;
       }
 
       const genus = await this.genusService.createGenus(genusData);
-      res.status(201).json(genus);
+      res.status(201).json(genus); return;
     } catch (error) {
-      res.status(500).json({ message: "Error creating genus", error });
+      res.status(500).json({ message: "Error creating genus", error }); return;
     }
   }
 
@@ -60,20 +61,20 @@ export class GenusController {
       // Validate input data
       const validationErrors = await this.genusService.validateGenusData(genusData);
       if (validationErrors.length > 0) {
-        res.status(400).json({ message: "Validation failed", errors: validationErrors });
+        res.status(400).json({ message: "Validation failed", errors: validationErrors }); return;
         return;
       }
 
       const genus = await this.genusService.updateGenus(id, genusData);
       
       if (!genus) {
-        res.status(404).json({ message: "Genus not found" });
+        res.status(404).json({ message: "Genus not found" }); return;
         return;
       }
       
       res.json(genus);
     } catch (error) {
-      res.status(500).json({ message: "Error updating genus", error });
+      res.status(500).json({ message: "Error updating genus", error }); return;
     }
   }
 
@@ -83,13 +84,13 @@ export class GenusController {
       const success = await this.genusService.deleteGenus(id);
       
       if (!success) {
-        res.status(404).json({ message: "Genus not found" });
+        res.status(404).json({ message: "Genus not found" }); return;
         return;
       }
       
-      res.status(204).send();
+      res.status(204).send(); return;
     } catch (error) {
-      res.status(500).json({ message: "Error deleting genus", error });
+      res.status(500).json({ message: "Error deleting genus", error }); return;
     }
   }
 
@@ -99,7 +100,7 @@ export class GenusController {
       const genera = await this.genusService.getGeneraByFamily(familyId);
       res.json(genera);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching genera by family", error });
+      res.status(500).json({ message: "Error fetching genera by family", error }); return;
     }
   }
 
@@ -108,14 +109,14 @@ export class GenusController {
       const { name } = req.query;
       
       if (!name || typeof name !== 'string') {
-        res.status(400).json({ message: "Search name is required" });
+        res.status(400).json({ message: "Search name is required" }); return;
         return;
       }
 
       const genera = await this.genusService.searchGenera(name);
       res.json(genera);
     } catch (error) {
-      res.status(500).json({ message: "Error searching genera", error });
+      res.status(500).json({ message: "Error searching genera", error }); return;
     }
   }
 } 

@@ -1,9 +1,10 @@
 import { Router } from "express";
+import { Container } from "typedi";
 import { PictureController } from "../controllers/PictureController";
 import { auth } from "../middleware/auth";
 
 const router = Router();
-const pictureController = new PictureController();
+const pictureController = Container.get(PictureController);
 
 // Public routes
 router.get("/", pictureController.getAllPictures);

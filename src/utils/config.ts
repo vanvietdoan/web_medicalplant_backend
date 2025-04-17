@@ -19,6 +19,7 @@ const config = {
   },
   jwtSecret: process.env.JWT_SECRET || 'secret',
   jwtSecretEmail: process.env.JWT_SECRET_EMAIL ||'secret',
+  nodeEnv: process.env.NODE_ENV || 'development',
   tokenExpiresIn: Number(process.env.TOKEN_EXPIRES_IN) || 3600,
   frontEndUrl: process.env.FRONT_END_URL || "http://157.20.58.220:2204",
 };

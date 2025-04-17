@@ -1,37 +1,47 @@
+import { Service } from "typedi";
 import { PlantDisease } from "../entities/PlantDisease";
-import { getRepository, Repository } from "typeorm";
 import { IPlantDisease } from "../interfaces/IPlantDisease";
+import { PlantDiseaseRepository } from "../repositories/PlantDiseaseRepository";
 
+@Service()
 export class PlantDiseaseService {
-  private plantDiseaseRepository: Repository<PlantDisease>;
+  constructor(
+    private plantDiseaseRepository: PlantDiseaseRepository
+  ) {}
 
-  constructor() {
-    this.plantDiseaseRepository = getRepository(PlantDisease);
+  public async getAllPlantDiseases(): Promise<IPlantDisease[]> {
+    return this.plantDiseaseRepository.findAll();
   }
 
-  async getAllPlantDiseases(): Promise<IPlantDisease[]> {
-    return this.plantDiseaseRepository.find({ relations: ["plant", "disease"] });
+  public async getPlantDiseaseById(id: number): Promise<IPlantDisease | null> {
+    return this.plantDiseaseRepository.findById(id);
   }
 
-  async getPlantDiseaseById(id: number): Promise<IPlantDisease | null> {
-    return this.plantDiseaseRepository.findOne({ where: { plant_disease_id: id } });
+  public async createPlantDisease(data: Partial<IPlantDisease>): Promise<IPlantDisease> {
+    return this.plantDiseaseRepository.create(data as Partial<PlantDisease>);
   }
 
-  async createPlantDisease(data: Partial<IPlantDisease>): Promise<IPlantDisease> {
-    const plantDisease = this.plantDiseaseRepository.create(data);
-    return this.plantDiseaseRepository.save(plantDisease);
+  public async updatePlantDisease(id: number, data: Partial<IPlantDisease>): Promise<IPlantDisease | null> {
+    return this.plantDiseaseRepository.update(id, data as Partial<PlantDisease>);
   }
 
-  async updatePlantDisease(id: number, data: Partial<IPlantDisease>): Promise<IPlantDisease | null> {
-    const plantDisease = await this.plantDiseaseRepository.findOne({ where: { plant_disease_id: id } });
-    if (!plantDisease) return null;
-
-    Object.assign(plantDisease, data);
-    return this.plantDiseaseRepository.save(plantDisease);
+  public async deletePlantDisease(id: number): Promise<boolean> {
+    return this.plantDiseaseRepository.delete(id);
   }
 
-  async deletePlantDisease(id: number): Promise<boolean> {
-    const result = await this.plantDiseaseRepository.delete(id);
-    return result.affected !== 0;
+  public async getPlantDiseasesByPlant(plantId: number): Promise<IPlantDisease[]> {
+    return this.plantDiseaseRepository.findByPlant(plantId);
+  }
+
+  public async getPlantDiseasesByDisease(diseaseId: number): Promise<IPlantDisease[]> {
+    return this.plantDiseaseRepository.findByDisease(diseaseId);
+  }
+
+  public async searchPlantDiseasesBySymptoms(symptoms: string): Promise<IPlantDisease[]> {
+    return this.plantDiseaseRepository.searchBySymptoms(symptoms);
+  }
+
+  public async searchPlantDiseasesByTreatment(treatment: string): Promise<IPlantDisease[]> {
+    return this.plantDiseaseRepository.searchByTreatment(treatment);
   }
 }

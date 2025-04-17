@@ -1,8 +1,10 @@
 import { Repository } from "typeorm";
+import { Service } from "typedi";
 import { AppDataSource } from "../config/database";
 import { Division } from "../entities/Division";
 import { ILike } from "typeorm";
 
+@Service()
 export class DivisionRepository {
   private repository: Repository<Division>;
 
@@ -10,32 +12,32 @@ export class DivisionRepository {
     this.repository = AppDataSource.getRepository(Division);
   }
 
-  async findAll(): Promise<Division[]> {
+  public async findAll(): Promise<Division[]> {
     return this.repository.find();
   }
 
-  async findById(id: number): Promise<Division | null> {
+  public async findById(id: number): Promise<Division | null> {
     return this.repository.findOne({
       where: { division_id: id }
     });
   }
 
-  async create(division: Partial<Division>): Promise<Division> {
+  public async create(division: Partial<Division>): Promise<Division> {
     const newDivision = this.repository.create(division);
     return this.repository.save(newDivision);
   }
 
-  async update(id: number, division: Partial<Division>): Promise<Division | null> {
+  public async update(id: number, division: Partial<Division>): Promise<Division | null> {
     await this.repository.update(id, division);
     return this.findById(id);
   }
 
-  async delete(id: number): Promise<boolean> {
+  public async delete(id: number): Promise<boolean> {
     const result = await this.repository.delete(id);
     return result.affected ? true : false;
   }
 
-async searchByName(name: string): Promise<Division[]> {
+public async searchByName(name: string): Promise<Division[]> {
   if (!name?.trim()) {
     return [];
   }

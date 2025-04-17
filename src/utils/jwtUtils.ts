@@ -5,6 +5,7 @@ interface JWTPayload {
   userId: number;
   role?: string;
   email: string;
+  purpose?: string;
 }
 
 export const jwtUtils = {

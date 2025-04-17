@@ -1,6 +1,8 @@
 import { FamilyRepository } from "../repositories/FamilyRepository";
 import { Family } from "../entities/Family";
+import { Service } from "typedi";
 
+@Service()
 export class FamilyService {
   private familyRepository: FamilyRepository;
 
@@ -8,35 +10,35 @@ export class FamilyService {
     this.familyRepository = new FamilyRepository();
   }
 
-  async getAllFamilies(): Promise<Family[]> {
+  public async getAllFamilies(): Promise<Family[]> {
     return this.familyRepository.findAll();
   }
 
-  async getFamilyById(id: number): Promise<Family | null> {
+  public async getFamilyById(id: number): Promise<Family | null> {
     return this.familyRepository.findById(id);
   }
 
-  async createFamily(familyData: Partial<Family>): Promise<Family> {
+  public async createFamily(familyData: Partial<Family>): Promise<Family> {
     return this.familyRepository.create(familyData);
   }
 
-  async updateFamily(id: number, familyData: Partial<Family>): Promise<Family | null> {
+  public async updateFamily(id: number, familyData: Partial<Family>): Promise<Family | null> {
     return this.familyRepository.update(id, familyData);
   }
 
-  async deleteFamily(id: number): Promise<boolean> {
+  public async deleteFamily(id: number): Promise<boolean> {
     return this.familyRepository.delete(id);
   }
 
-  async getFamiliesByOrder(orderId: number): Promise<Family[]> {
+  public async getFamiliesByOrder(orderId: number): Promise<Family[]> {
     return this.familyRepository.findByOrder(orderId);
   }
 
-  async searchFamilies(name: string): Promise<Family[]> {
+  public async searchFamilies(name: string): Promise<Family[]> {
     return this.familyRepository.searchByName(name);
   }
 
-  async validateFamilyData(familyData: Partial<Family>): Promise<string[]> {
+  public async validateFamilyData(familyData: Partial<Family>): Promise<string[]> {
     const errors: string[] = [];
 
     if (!familyData.name) {

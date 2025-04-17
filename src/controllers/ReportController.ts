@@ -1,20 +1,21 @@
 import { Request, Response } from "express";
+import { Service } from "typedi";
 import { ReportService } from "../services/ReportService";
 import { AuthRequest } from "../middleware/auth";
 
+@Service()
 export class ReportController {
-  private reportService: ReportService;
+  constructor(
+    private reportService: ReportService
+  ) {}
 
-  constructor() {
-    this.reportService = new ReportService();
-  }
 
   async getAllReports(req: Request, res: Response): Promise<void> {
     try {
       const reports = await this.reportService.getAllReports();
       res.json(reports);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching reports" });
+      res.status(500).json({ message: "Error fetching reports" }); return;
     }
   }
 
@@ -25,10 +26,10 @@ export class ReportController {
       if (report) {
         res.json(report);
       } else {
-        res.status(404).json({ message: "Report not found" });
+        res.status(404).json({ message: "Report not found" }); return;
       }
     } catch (error) {
-      res.status(500).json({ message: "Error fetching report" });
+      res.status(500).json({ message: "Error fetching report" }); return;
     }
   }
 
@@ -36,7 +37,7 @@ export class ReportController {
     try {
       const userId = req.user?.id;
       if (!userId) {
-        res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" }); return;
         return;
       }
 
@@ -44,9 +45,9 @@ export class ReportController {
         ...req.body,
         user: { User_ID: userId }
       });
-      res.status(201).json(report);
+      res.status(201).json(report); return;
     } catch (error) {
-      res.status(500).json({ message: "Error creating report" });
+      res.status(500).json({ message: "Error creating report" }); return;
     }
   }
 
@@ -57,10 +58,10 @@ export class ReportController {
       if (report) {
         res.json(report);
       } else {
-        res.status(404).json({ message: "Report not found" });
+        res.status(404).json({ message: "Report not found" }); return;
       }
     } catch (error) {
-      res.status(500).json({ message: "Error updating report" });
+      res.status(500).json({ message: "Error updating report" }); return;
     }
   }
 
@@ -69,12 +70,12 @@ export class ReportController {
       const id = parseInt(req.params.id);
       const result = await this.reportService.deleteReport(id);
       if (result) {
-        res.status(204).send();
+        res.status(204).send(); return;
       } else {
-        res.status(404).json({ message: "Report not found" });
+        res.status(404).json({ message: "Report not found" }); return;
       }
     } catch (error) {
-      res.status(500).json({ message: "Error deleting report" });
+      res.status(500).json({ message: "Error deleting report" }); return;
     }
   }
 
@@ -84,7 +85,7 @@ export class ReportController {
       const reports = await this.reportService.getReportsByUser(userId);
       res.json(reports);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching reports by user" });
+      res.status(500).json({ message: "Error fetching reports by user" }); return;
     }
   }
 
@@ -94,7 +95,7 @@ export class ReportController {
       const reports = await this.reportService.getReportsByPlant(plantId);
       res.json(reports);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching reports by plant" });
+      res.status(500).json({ message: "Error fetching reports by plant" }); return;
     }
   }
 } 

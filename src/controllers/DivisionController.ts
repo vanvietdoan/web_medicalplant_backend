@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
+import { Service } from "typedi";
 import { DivisionService } from "../services/DivisionService";
 import logger from "../utils/logger";
 
 
+@Service()
 export class DivisionController {
-  private divisionService: DivisionService;
+  constructor(
+    private divisionService: DivisionService
+  ) {}
 
-  constructor() {
-    this.divisionService = new DivisionService();
-  }
   async getAllDivisions(req: Request, res: Response): Promise<void> {
     try {
       logger.info('Getting all divisions');
@@ -17,7 +18,7 @@ export class DivisionController {
       res.json(divisions);
     } catch (error) {
       logger.error('Error fetching divisions:', error);
-      res.status(500).json({ message: "Error fetching divisions", error });
+      res.status(500).json({ message: "Error fetching divisions", error }); return;
     }
   }
 
@@ -29,7 +30,7 @@ export class DivisionController {
       // Check if id is a valid number
       if (isNaN(id)) {
         logger.warn(`Invalid division id provided: ${idParam}`);
-        res.status(400).json({ message: "Invalid division ID. Please provide a numeric ID." });
+        res.status(400).json({ message: "Invalid division ID. Please provide a numeric ID." }); return;
         return;
       }
       
@@ -38,7 +39,7 @@ export class DivisionController {
       
       if (!division) {
         logger.warn(`Division with id ${id} not found`);
-        res.status(404).json({ message: "Division not found" });
+        res.status(404).json({ message: "Division not found" }); return;
         return;
       }
       
@@ -46,7 +47,7 @@ export class DivisionController {
       res.json(division);
     } catch (error) {
       logger.error(`Error fetching division with id ${req.params.id}:`, error);
-      res.status(500).json({ message: "Error fetching division", error });
+      res.status(500).json({ message: "Error fetching division", error }); return;
     }
   }
 
@@ -59,16 +60,16 @@ export class DivisionController {
       const validationErrors = await this.divisionService.validateDivisionData(divisionData);
       if (validationErrors.length > 0) {
         logger.warn('Invalid division data:', validationErrors);
-        res.status(400).json({ message: "Validation failed", errors: validationErrors });
+        res.status(400).json({ message: "Validation failed", errors: validationErrors }); return;
         return;
       }
 
       const division = await this.divisionService.createDivision(divisionData);
       logger.info('Successfully created new division:', division);
-      res.status(201).json(division);
+      res.status(201).json(division); return;
     } catch (error) {
       logger.error('Error creating division:', error);
-      res.status(500).json({ message: "Error creating division", error });
+      res.status(500).json({ message: "Error creating division", error }); return;
     }
   }
 
@@ -80,7 +81,7 @@ export class DivisionController {
       // Check if id is a valid number
       if (isNaN(id)) {
         logger.warn(`Invalid division id provided for update: ${idParam}`);
-        res.status(400).json({ message: "Invalid division ID. Please provide a numeric ID." });
+        res.status(400).json({ message: "Invalid division ID. Please provide a numeric ID." }); return;
         return;
       }
       
@@ -90,7 +91,7 @@ export class DivisionController {
       const validationErrors = await this.divisionService.validateDivisionData(divisionData);
       if (validationErrors.length > 0) {
         logger.warn(`Validation failed for division update:`, validationErrors);
-        res.status(400).json({ message: "Validation failed", errors: validationErrors });
+        res.status(400).json({ message: "Validation failed", errors: validationErrors }); return;
         return;
       }
 
@@ -99,7 +100,7 @@ export class DivisionController {
       
       if (!division) {
         logger.warn(`Division with id ${id} not found for update`);
-        res.status(404).json({ message: "Division not found" });
+        res.status(404).json({ message: "Division not found" }); return;
         return;
       }
       
@@ -107,7 +108,7 @@ export class DivisionController {
       res.json(division);
     } catch (error) {
       logger.error(`Error updating division with id ${req.params.id}:`, error);
-      res.status(500).json({ message: "Error updating division", error });
+      res.status(500).json({ message: "Error updating division", error }); return;
     }
   }
 
@@ -119,7 +120,7 @@ export class DivisionController {
       // Check if id is a valid number
       if (isNaN(id)) {
         logger.warn(`Invalid division id provided for deletion: ${idParam}`);
-        res.status(400).json({ message: "Invalid division ID. Please provide a numeric ID." });
+        res.status(400).json({ message: "Invalid division ID. Please provide a numeric ID." }); return;
         return;
       }
       
@@ -128,15 +129,15 @@ export class DivisionController {
       
       if (!success) {
         logger.warn(`Division with id ${id} not found for deletion`);
-        res.status(404).json({ message: "Division not found" });
+        res.status(404).json({ message: "Division not found" }); return;
         return;
       }
       
       logger.info(`Successfully deleted division with id: ${id}`);
-      res.status(200).json({ message: "Division deleted successfully"});
+      res.status(200).json({ message: "Division deleted successfully"}); return;
     } catch (error) {
       logger.error(`Error deleting division with id ${req.params.id}:`, error);
-      res.status(500).json({ message: "Error deleting division", error });
+      res.status(500).json({ message: "Error deleting division", error }); return;
     }
   }
 
@@ -156,7 +157,7 @@ export class DivisionController {
       res.json(divisions);
     } catch (error) {
       logger.error('Error searching divisions:', error);
-      res.status(500).json({ message: "Error searching divisions", error });
+      res.status(500).json({ message: "Error searching divisions", error }); return;
     }
   }
 } 

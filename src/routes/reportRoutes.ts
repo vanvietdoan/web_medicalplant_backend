@@ -1,9 +1,10 @@
 import { Router } from "express";
+import { Container } from "typedi";
 import { ReportController } from "../controllers/ReportController";
 import { auth } from "../middleware/auth";
 
 const router = Router();
-const reportController = new ReportController();
+const reportController = Container.get(ReportController);
 
 // Public routes
 router.get("/", reportController.getAllReports);

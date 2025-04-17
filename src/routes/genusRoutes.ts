@@ -1,9 +1,10 @@
 import { Router } from "express";
+import { Container } from "typedi";
 import { GenusController } from "../controllers/GenusController";
 import { auth } from "../middleware/auth";
 
 const router = Router();
-const genusController = new GenusController();
+const genusController = Container.get(GenusController);
 
 // Public routes
 router.get("/", genusController.getAllGenera);

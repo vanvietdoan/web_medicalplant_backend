@@ -1,19 +1,20 @@
 import { Router } from "express";
+import { Container } from "typedi";
 import { PlantController } from "../controllers/PlantController";
 import { auth } from "../middleware/auth";
 
 const router = Router();
-const plantController = new PlantController();
+const plantController = Container.get(PlantController);
 
 // Search routes
-router.get('/filter-plant', plantController.filterPlants.bind(plantController));
+router.get('/filter-plant', plantController.filterPlants);
 // Public routes
-router.get("/", plantController.getAllPlants.bind(plantController));
-router.get("/:id", plantController.getPlantById.bind(plantController));
+router.get("/", plantController.getAllPlants);
+router.get("/:id", plantController.getPlantById);
 
 // Protected routes
-router.post("/", auth, plantController.createPlant.bind(plantController));
-router.put("/:id", auth, plantController.updatePlant.bind(plantController));
-router.delete("/:id", auth, plantController.deletePlant.bind(plantController));
+router.post("/", auth, plantController.createPlant);
+router.put("/:id", auth, plantController.updatePlant);
+router.delete("/:id", auth, plantController.deletePlant);
 
 export default router;

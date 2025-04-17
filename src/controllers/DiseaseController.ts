@@ -1,32 +1,30 @@
 import { Request, Response } from "express";
+import { Service } from "typedi";
 import { DiseaseService } from "../services/DiseaseService";
 import { IDisease } from "../interfaces/IDisease";
-import logger from "../utils/logger";
 
+@Service()
 export class DiseaseController {
-  private diseaseService: DiseaseService;
+  constructor(
+    private diseaseService: DiseaseService
+  ) {}
 
-  constructor() {
-    this.diseaseService = new DiseaseService();
-  }
-
-  async getAllDiseases(req: Request, res: Response) {
+  public async getAllDiseases(req: Request, res: Response): Promise<void> {
     try {
       const diseases = await this.diseaseService.getAllDiseases();
-      logger.info(`Get disease data: ${req.query}`);
       res.json(diseases);
     } catch (error) {
-      logger.info('Fail get all disease data')
       res.status(500).json({ message: "Error fetching diseases", error });
     }
   }
 
-  async getDiseaseById(req: Request, res: Response) {
+  public async getDiseaseById(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
       const disease = await this.diseaseService.getDiseaseById(id);
       if (!disease) {
-        return res.status(404).json({ message: "Disease not found" });
+        res.status(404).json({ message: "Disease not found" });
+        return;
       }
       res.json(disease);
     } catch (error) {
@@ -34,7 +32,7 @@ export class DiseaseController {
     }
   }
 
-  async createDisease(req: Request, res: Response) {
+  public async createDisease(req: Request, res: Response): Promise<void> {
     try {
       const disease: Partial<IDisease> = req.body;
       const newDisease = await this.diseaseService.createDisease(disease);
@@ -44,13 +42,14 @@ export class DiseaseController {
     }
   }
 
-  async updateDisease(req: Request, res: Response) {
+  public async updateDisease(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
       const disease: Partial<IDisease> = req.body;
       const updatedDisease = await this.diseaseService.updateDisease(id, disease);
       if (!updatedDisease) {
-        return res.status(404).json({ message: "Disease not found" });
+        res.status(404).json({ message: "Disease not found" });
+        return;
       }
       res.json(updatedDisease);
     } catch (error) {
@@ -58,12 +57,13 @@ export class DiseaseController {
     }
   }
 
-  async deleteDisease(req: Request, res: Response) {
+  public async deleteDisease(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
       const result = await this.diseaseService.deleteDisease(id);
       if (!result) {
-        return res.status(404).json({ message: "Disease not found" });
+        res.status(404).json({ message: "Disease not found" });
+        return;
       }
       res.json({ message: "Disease deleted successfully" });
     } catch (error) {
@@ -71,7 +71,7 @@ export class DiseaseController {
     }
   }
 
-  async searchByName(req: Request, res: Response) {
+  public async searchByName(req: Request, res: Response): Promise<void> {
     try {
       const name = req.query.name as string;
       const diseases = await this.diseaseService.searchByName(name);
@@ -81,7 +81,7 @@ export class DiseaseController {
     }
   }
 
-  async searchBySymptoms(req: Request, res: Response) {
+  public async searchBySymptoms(req: Request, res: Response): Promise<void> {
     try {
       const symptoms = req.query.symptoms as string;
       const diseases = await this.diseaseService.searchBySymptoms(symptoms);

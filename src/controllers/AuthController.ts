@@ -1,18 +1,32 @@
 import { Request, Response } from "express";
+import { Service, Inject } from "typedi";
 import { AuthService } from "../services/AuthService";
 import { AuthRequest } from "../middleware/auth";
 import logger from "../utils/logger";
 
+@Service()
 export class AuthController {
-  private authService: AuthService;
+  @Inject()
+  private authService!: AuthService;
 
   constructor() {
-    this.authService = new AuthService();
+    console.log('AuthController constructor called');
+    setTimeout(() => {
+      console.log('AuthService injected:', this.authService !== undefined);
+    }, 1000);
   }
 
-  async login(req: Request, res: Response): Promise<void> {
+  public async login(req: Request, res: Response): Promise<void> {
     try {
       logger.info(`Login attempt for email: ${req.body.email}`);
+      
+      // Debug check
+      if (!this.authService) {
+        logger.error(`AuthService is undefined in login method`);
+        res.status(500).json({ message: "Server configuration error" });
+        return;
+      }
+      
       const { email, password } = req.body;
       const result = await this.authService.login(email, password);
       
@@ -43,14 +57,13 @@ export class AuthController {
     }
   }
   
-  async logout(req: AuthRequest, res: Response): Promise<void> {
+  public async logout(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const token = req.header("Authorization")?.replace("Bearer ", "");
       const userId = req.user?.id;
       logger.info(`Logout attempt for user ID: ${userId}`);
       
-      if (token) {
-        await this.authService.logout(token);
+      if (userId) {
+        await this.authService.logout(userId);
         logger.info(`Successfully logged out user ID: ${userId}`);
       }
       res.json({ message: "Logged out successfully" });
@@ -60,7 +73,7 @@ export class AuthController {
     }
   }
 
-  async register(req: Request, res: Response): Promise<void> {
+  public async register(req: Request, res: Response): Promise<void> {
     try {
       logger.info(`Registration attempt for email: ${req.body.email}`);
       const user = await this.authService.register(req.body);
@@ -80,7 +93,7 @@ export class AuthController {
     }
   }
 
-  async verifyEmail(req: Request, res: Response): Promise<void> {
+  public async verifyEmail(req: Request, res: Response): Promise<void> {
     try {
       const { token } = req.params;
       logger.info(`Email verification attempt with token: ${token}`);
@@ -98,7 +111,7 @@ export class AuthController {
     }
   }
 
-  async forgotPassword(req: Request, res: Response): Promise<void> {
+  public async forgotPassword(req: Request, res: Response): Promise<void> {
     try {
       const { email } = req.body;
       logger.info(`Password reset request for email: ${email}`);
@@ -116,7 +129,7 @@ export class AuthController {
     }
   }
 
-  async changePassword(req: AuthRequest, res: Response): Promise<void> {
+  public async changePassword(req: AuthRequest, res: Response): Promise<void> {
     try {
       const userId = req.user?.id;
       logger.info(`Password change attempt for user ID: ${userId}`);

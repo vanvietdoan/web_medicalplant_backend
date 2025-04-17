@@ -1,16 +1,37 @@
-import { UserRepository } from "../repositories/UserRepository";
+import { Service } from 'typedi';
+import { User } from '../entities/User';
+import { UserRepository } from '../repositories/UserRepository';
 import { IUser, IUserDTO, IUserResponse } from "../interfaces/IUser";
 import bcrypt from "bcryptjs";
 import { Role } from '../entities/Role';
 
+@Service()
 export class UserService {
-  private userRepository: UserRepository;
+  constructor(
+    private userRepository: UserRepository
+  ) {}
 
-  constructor() {
-    this.userRepository = new UserRepository();
+  public async findAll(): Promise<User[]> {
+    return this.userRepository.findAll();
   }
 
-  async getAllUsers(): Promise<IUserResponse[]> {
+  public async findById(id: number): Promise<User | null> {
+    return this.userRepository.findById(id);
+  }
+
+  public async create(userData: Partial<User>): Promise<User> {
+    return this.userRepository.create(userData);
+  }
+
+  public async update(id: number, userData: Partial<User>): Promise<User | null> {
+    return this.userRepository.update(id, userData);
+  }
+
+  public async delete(id: number): Promise<boolean> {
+    return this.userRepository.delete(id);
+  }
+
+  public async getAllUsers(): Promise<IUserResponse[]> {
     const users = await this.userRepository.findAll();
     return users.map(user => ({
       user_id: user.user_id,
@@ -28,7 +49,7 @@ export class UserService {
     }));
   }
 
-  async getUserById(id: number): Promise<IUserResponse | null> {
+  public async getUserById(id: number): Promise<IUserResponse | null> {
     const user = await this.userRepository.findById(id);
     if (!user) return null;
     
@@ -48,7 +69,7 @@ export class UserService {
     };
   }
 
-  async createUser(userData: Partial<IUserDTO>): Promise<IUserResponse> {
+  public async createUser(userData: Partial<IUserDTO>): Promise<IUserResponse> {
     // Check if user with this email already exists
     if (userData.email) {
       const existingUser = await this.userRepository.findByEmail(userData.email);
@@ -79,7 +100,7 @@ export class UserService {
     };
   }
 
-  async updateUser(id: number, userData: Partial<IUserDTO>): Promise<IUserResponse | null> {
+  public async updateUser(id: number, userData: Partial<IUserDTO>): Promise<IUserResponse | null> {
     // Hash password if it's being updated
     if (userData.password) {
       userData.password = await bcrypt.hash(userData.password, 10);
@@ -104,11 +125,11 @@ export class UserService {
     };
   }
 
-  async deleteUser(id: number): Promise<boolean> {
+  public async deleteUser(id: number): Promise<boolean> {
     return this.userRepository.delete(id);
   }
 
-  async getUserByEmail(email: string): Promise<IUserResponse | null> {
+  public async getUserByEmail(email: string): Promise<IUserResponse | null> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) return null;
 

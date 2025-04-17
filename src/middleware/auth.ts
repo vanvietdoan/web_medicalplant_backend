@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { jwtUtils } from "../utils/jwtUtils";
-import { tokenBlacklist } from "../utils/tokenBlacklist";
+import { TokenCache } from "../utils/tokenCache";
+import { Container } from "typedi";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -18,14 +19,18 @@ export const auth = async (req: AuthRequest, res: Response, next: NextFunction) 
       throw new Error("No authentication token provided");
     }
 
-    // Check if token is blacklisted to check logout(time)
-    if (tokenBlacklist.isBlacklisted(token)) {
-      throw new Error("Token has been invalidated");
-    }
-
+    // Verify and decode the token
     const decoded = jwtUtils.verifyToken(token);
     if (!decoded) {
       throw new Error("Invalid or expired token");
+    }
+    
+    // Get the TokenCache instance from container
+    const tokenCache = Container.get(TokenCache);
+    
+    // Check if token is valid in cache
+    if (!tokenCache.validateToken(decoded.userId, token)) {
+      throw new Error("Token is invalid or revoked");
     }
     
     req.user = {

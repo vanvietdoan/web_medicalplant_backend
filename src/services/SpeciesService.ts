@@ -1,6 +1,8 @@
+import { Service } from "typedi";
 import { SpeciesRepository } from "../repositories/SpeciesRepository";
 import { Species } from "../entities/Species";
 
+@Service()
 export class SpeciesService {
   private speciesRepository: SpeciesRepository;
 
@@ -8,35 +10,35 @@ export class SpeciesService {
     this.speciesRepository = new SpeciesRepository();
   }
 
-  async getAllSpecies(): Promise<Species[]> {
+  public async getAllSpecies(): Promise<Species[]> {
     return this.speciesRepository.findAll();
   }
 
-  async getSpeciesById(id: number): Promise<Species | null> {
+  public async getSpeciesById(id: number): Promise<Species | null> {
     return this.speciesRepository.findById(id);
   }
 
-  async createSpecies(speciesData: Partial<Species>): Promise<Species> {
+  public async createSpecies(speciesData: Partial<Species>): Promise<Species> {
     return this.speciesRepository.create(speciesData);
   }
 
-  async updateSpecies(id: number, speciesData: Partial<Species>): Promise<Species | null> {
+  public async updateSpecies(id: number, speciesData: Partial<Species>): Promise<Species | null> {
     return this.speciesRepository.update(id, speciesData);
   }
 
-  async deleteSpecies(id: number): Promise<boolean> {
+  public async deleteSpecies(id: number): Promise<boolean> {
     return this.speciesRepository.delete(id);
   }
 
-  async getSpeciesByGenus(genusId: number): Promise<Species[]> {
+  public async getSpeciesByGenus(genusId: number): Promise<Species[]> {
     return this.speciesRepository.findByGenus(genusId);
   }
 
-  async searchSpecies(name: string): Promise<Species[]> {
+  public async searchSpecies(name: string): Promise<Species[]> {
     return this.speciesRepository.searchByName(name);
   }
 
-  async validateSpeciesData(speciesData: Partial<Species>): Promise<string[]> {
+  public async validateSpeciesData(speciesData: Partial<Species>): Promise<string[]> {
     const errors: string[] = [];
 
     if (!speciesData.name) {

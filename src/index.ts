@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express from "express";
 import cors from "cors";
 import { AppDataSource } from "./config/database";
@@ -8,11 +9,23 @@ import reportRoutes from "./routes/reportRoutes";
 import authRoutes from "./routes/authRoutes";
 import uploadRoutes from './routes/uploadRoutes';
 import divisionRoutes from './routes/divisionRoutes';
-
 import config from "./utils/config";
 import logger from "./utils/logger";
 import path from "path";
+import { useContainer } from "typeorm";
+import { Container } from "typedi";
 
+// Đảm bảo reflect-metadata được import đầu tiên
+import 'reflect-metadata';
+
+// Khởi tạo các thành phần cốt lõi để Dependency Injection có thể hoạt động
+import "./utils/tokenCache";
+import "./repositories/UserRepository";
+import "./services/AuthService";
+import "./controllers/AuthController";
+
+// Set up TypeDI as the container for TypeORM
+useContainer(Container);
 
 const app = express();
 const port = config.port;
@@ -23,7 +36,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
-app.use("/api/auth", authRoutes); // Add this line to use the userRoutes for /api/auth
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/plants", plantRoutes);
 app.use("/api/diseases", diseaseRoutes);

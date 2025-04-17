@@ -1,6 +1,8 @@
+import { Service } from "typedi";
 import { OrderRepository } from "../repositories/OrderRepository";
 import { Order } from "../entities/Order";
 
+@Service()
 export class OrderService {
   private orderRepository: OrderRepository;
 
@@ -8,35 +10,35 @@ export class OrderService {
     this.orderRepository = new OrderRepository();
   }
 
-  async getAllOrders(): Promise<Order[]> {
+  public async getAllOrders(): Promise<Order[]> {
     return this.orderRepository.findAll();
   }
 
-  async getOrderById(id: number): Promise<Order | null> {
+  public async getOrderById(id: number): Promise<Order | null> {
     return this.orderRepository.findById(id);
   }
 
-  async createOrder(orderData: Partial<Order>): Promise<Order> {
+  public async createOrder(orderData: Partial<Order>): Promise<Order> {
     return this.orderRepository.create(orderData);
   }
 
-  async updateOrder(id: number, orderData: Partial<Order>): Promise<Order | null> {
+  public async updateOrder(id: number, orderData: Partial<Order>): Promise<Order | null> {
     return this.orderRepository.update(id, orderData);
   }
 
-  async deleteOrder(id: number): Promise<boolean> {
+  public async deleteOrder(id: number): Promise<boolean> {
     return this.orderRepository.delete(id);
   }
 
-  async getOrdersByClass(classId: number): Promise<Order[]> {
+  public async getOrdersByClass(classId: number): Promise<Order[]> {
     return this.orderRepository.findByClass(classId);
   }
 
-  async searchOrders(name: string): Promise<Order[]> {
+  public async searchOrders(name: string): Promise<Order[]> {
     return this.orderRepository.searchByName(name);
   }
 
-  async validateOrderData(orderData: Partial<Order>): Promise<string[]> {
+  public async validateOrderData(orderData: Partial<Order>): Promise<string[]> {
     const errors: string[] = [];
 
     if (!orderData.name) {

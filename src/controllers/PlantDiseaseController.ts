@@ -1,29 +1,30 @@
 import { Request, Response } from "express";
+import { Service } from "typedi";
 import { PlantDiseaseService } from "../services/PlantDiseaseService";
 import { IPlantDisease } from "../interfaces/IPlantDisease";
 
+@Service()
 export class PlantDiseaseController {
-  private medicalPlantDiseaseService: PlantDiseaseService;
+  constructor(
+    private plantDiseaseService: PlantDiseaseService
+  ) {}
 
-  constructor() {
-    this.medicalPlantDiseaseService = new PlantDiseaseService();
-  }
-
-  async getAllPlantDiseases(req: Request, res: Response) {
+  public async getAllPlantDiseases(req: Request, res: Response): Promise<void> {
     try {
-      const plantDiseases = await this.medicalPlantDiseaseService.getAllPlantDiseases();
+      const plantDiseases = await this.plantDiseaseService.getAllPlantDiseases();
       res.json(plantDiseases);
     } catch (error) {
       res.status(500).json({ message: "Error fetching plantDiseases", error });
     }
   }
 
-  async getPlantDiseaseById(req: Request, res: Response) {
+  public async getPlantDiseaseById(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
-      const plantDisease = await this.medicalPlantDiseaseService.getPlantDiseaseById(id);
+      const plantDisease = await this.plantDiseaseService.getPlantDiseaseById(id);
       if (!plantDisease) {
-        return res.status(404).json({ message: "PlantDisease not found" });
+        res.status(404).json({ message: "PlantDisease not found" });
+        return;
       }
       res.json(plantDisease);
     } catch (error) {
@@ -31,23 +32,24 @@ export class PlantDiseaseController {
     }
   }
 
-  async createPlantDisease(req: Request, res: Response) {
+  public async createPlantDisease(req: Request, res: Response): Promise<void> {
     try {
       const plantDisease: Partial<IPlantDisease> = req.body;
-      const newPlantDisease = await this.medicalPlantDiseaseService.createPlantDisease(plantDisease);
+      const newPlantDisease = await this.plantDiseaseService.createPlantDisease(plantDisease);
       res.status(201).json(newPlantDisease);
     } catch (error) {
       res.status(500).json({ message: "Error creating plantDisease", error });
     }
   }
 
-  async updatePlantDisease(req: Request, res: Response) {
+  public async updatePlantDisease(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
       const plantDisease: Partial<IPlantDisease> = req.body;
-      const updatedPlantDisease = await this.medicalPlantDiseaseService.updatePlantDisease(id, plantDisease);
+      const updatedPlantDisease = await this.plantDiseaseService.updatePlantDisease(id, plantDisease);
       if (!updatedPlantDisease) {
-        return res.status(404).json({ message: "PlantDisease not found" });
+        res.status(404).json({ message: "PlantDisease not found" });
+        return;
       }
       res.json(updatedPlantDisease);
     } catch (error) {
@@ -55,16 +57,37 @@ export class PlantDiseaseController {
     }
   }
 
-  async deletePlantDisease(req: Request, res: Response) {
+  public async deletePlantDisease(req: Request, res: Response): Promise<void> {
     try {
       const id = parseInt(req.params.id);
-      const result = await this.medicalPlantDiseaseService.deletePlantDisease(id);
+      const result = await this.plantDiseaseService.deletePlantDisease(id);
       if (!result) {
-        return res.status(404).json({ message: "PlantDisease not found" });
+        res.status(404).json({ message: "PlantDisease not found" });
+        return;
       }
       res.json({ message: "PlantDisease deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: "Error deleting plantDisease", error });
+    }
+  }
+
+  public async getPlantDiseasesByPlant(req: Request, res: Response): Promise<void> {
+    try {
+      const plantId = parseInt(req.params.plantId);
+      const plantDiseases = await this.plantDiseaseService.getPlantDiseasesByPlant(plantId);
+      res.json(plantDiseases);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching plant diseases", error });
+    }
+  }
+
+  public async getPlantDiseasesByDisease(req: Request, res: Response): Promise<void> {
+    try {
+      const diseaseId = parseInt(req.params.diseaseId);
+      const plantDiseases = await this.plantDiseaseService.getPlantDiseasesByDisease(diseaseId);
+      res.json(plantDiseases);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching plant diseases", error });
     }
   }
 } 

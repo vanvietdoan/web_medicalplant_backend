@@ -1,9 +1,10 @@
 import { Router } from "express";
+import { Container } from "typedi";
 import { AdviceCommentController } from "../controllers/AdviceCommentController";
 import { auth } from "../middleware/auth";
 
 const router = Router();
-const adviceCommentController = new AdviceCommentController();
+const adviceCommentController = Container.get(AdviceCommentController);
 
 // Public routes
 router.get("/", adviceCommentController.getAllAdviceComments);

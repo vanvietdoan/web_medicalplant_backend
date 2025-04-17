@@ -3,7 +3,9 @@ import { AppDataSource } from "../config/database";
 import { Plant } from "../entities/Plant";
 import { IPlant, IFilterPlants } from "../interfaces/IPlant";
 import logger from "../utils/logger";
+import { Service } from "typedi";
 
+@Service()
 export class PlantRepository {
   private repository: Repository<IPlant>;
 
@@ -11,37 +13,37 @@ export class PlantRepository {
     this.repository = AppDataSource.getRepository(Plant);
   }
 
-  async findAll(): Promise<IPlant[]> {
+  public async findAll(): Promise<IPlant[]> {
     logger.info('Finding all plants');
     return this.repository.find();
   }
 
-  async findById(id: number): Promise<IPlant | null> {
+  public async findById(id: number): Promise<IPlant | null> {
     logger.info(`Finding plant with id: ${id}`);
     return this.repository.findOne({
       where: { plant_id: id }
     });
   }
 
-  async create(plant: Partial<IPlant>): Promise<IPlant> {
+  public async create(plant: Partial<IPlant>): Promise<IPlant> {
     logger.info('Creating new plant');
     const newPlant = this.repository.create(plant);
     return this.repository.save(newPlant);
   }
 
-  async update(id: number, plant: Partial<IPlant>): Promise<IPlant | null> {
+  public async update(id: number, plant: Partial<IPlant>): Promise<IPlant | null> {
     logger.info(`Updating plant with id: ${id}`);
     await this.repository.update(id, plant);
     return this.findById(id);
   }
 
-  async delete(id: number): Promise<boolean> {
+  public async delete(id: number): Promise<boolean> {
     logger.info(`Deleting plant with id: ${id}`);
     const result = await this.repository.delete(id);
     return result.affected ? true : false;
   }
 
-  async filterPlants(query: Partial<IFilterPlants>): Promise<IPlant[]> {
+  public async filterPlants(query: Partial<IFilterPlants>): Promise<IPlant[]> {
     logger.info('Filtering plants based on taxonomy and names:', query);
     
     // Start with a basic query builder

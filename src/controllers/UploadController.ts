@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { Request, Response } from 'express';
 import { IFileUploadResponse } from '../interfaces/IFile';
+import { Service } from 'typedi';
 
 // Ensure upload directories exist
 const createUploadDirectories = () => {
@@ -65,19 +66,20 @@ const upload = multer({
   }
 });
 
+@Service()
 export class UploadController {
   // Upload a single file
-  uploadSingle(fieldName: string) {
+  private uploadSingleMiddleware = (fieldName: string) => {
     return (req: Request, res: Response) => {
       const uploadMiddleware = upload.single(fieldName);
       
       uploadMiddleware(req, res, (err) => {
         if (err) {
-          return res.status(400).json({ message: err.message });
+          res.status(400).json({ message: err.message }); return;
         }
         
         if (!req.file) {
-          return res.status(400).json({ message: 'No file uploaded' });
+          res.status(400).json({ message: 'No file uploaded' }); return;
         }
         
         const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -90,23 +92,23 @@ export class UploadController {
           size: req.file.size
         };
         
-        res.status(200).json(response);
+        res.status(200).json(response); return;
       });
     };
   }
   
   // Upload multiple files
-  uploadMultiple(fieldName: string, maxCount: number = 5) {
+  private uploadMultipleMiddleware = (fieldName: string, maxCount: number = 5) => {
     return (req: Request, res: Response) => {
       const uploadMiddleware = upload.array(fieldName, maxCount);
       
       uploadMiddleware(req, res, (err) => {
         if (err) {
-          return res.status(400).json({ message: err.message });
+          res.status(400).json({ message: err.message }); return;
         }
         
         if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-          return res.status(400).json({ message: 'No files uploaded' });
+          res.status(400).json({ message: 'No files uploaded' }); return;
         }
         
         const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -121,8 +123,28 @@ export class UploadController {
           } as IFileUploadResponse;
         });
         
-        res.status(200).json(response);
+        res.status(200).json(response); return;
       });
     };
+  }
+
+  public async uploadAvatar(req: Request, res: Response): Promise<void> {
+    this.uploadSingleMiddleware('avatar')(req, res);
+  }
+
+  public async uploadProof(req: Request, res: Response): Promise<void> {
+    this.uploadSingleMiddleware('proof')(req, res);
+  }
+
+  public async uploadPlantImage(req: Request, res: Response): Promise<void> {
+    this.uploadSingleMiddleware('plant')(req, res);
+  }
+
+  public async uploadDiseaseImage(req: Request, res: Response): Promise<void> {
+    this.uploadSingleMiddleware('disease')(req, res);
+  }
+
+  public async uploadMultipleImages(req: Request, res: Response): Promise<void> {
+    this.uploadMultipleMiddleware('images')(req, res);
   }
 }

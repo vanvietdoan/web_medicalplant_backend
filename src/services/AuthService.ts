@@ -4,16 +4,17 @@ import { sendVerificationEmail, sendNewPasswordEmail } from "../utils/email";
 import { IUser, IRegisterDTO } from "../interfaces/IUser";
 import { jwtUtils } from "../utils/jwtUtils";
 import config from "../utils/config";
-import { tokenBlacklist } from "../utils/tokenBlacklist";
+import { Service } from "typedi";
+import { TokenCache } from "../utils/tokenCache";
 
+@Service()
 export class AuthService {
-  private userRepository: UserRepository;
+  constructor(
+    private userRepository: UserRepository,
+    private tokenCache: TokenCache
+  ) {}
 
-  constructor() {
-    this.userRepository = new UserRepository();
-  }
-
-  async login(email: string, password: string): Promise<{ user: IUser; token: string } | null> {
+  public async login(email: string, password: string): Promise<{ user: IUser; token: string } | null> {
     // Find user by email
     const user = await this.userRepository.findByEmail(email);
     if (!user) return null;
@@ -33,27 +34,24 @@ export class AuthService {
       role: user.role?.name,
       email: user.email
     });
+    
+    // Store token in cache for this user
+    this.tokenCache.setToken(user.user_id, token);
   
     return { user, token };
   }
 
-  async logout(token: string): Promise<boolean> {
+  public async logout(userId: number): Promise<boolean> {
     try {
-      // Verify the token is valid before blacklisting
-      const decoded = jwtUtils.verifyToken(token);
-      if (!decoded) {
-        return false;
-      }
-
-      // Add token to blacklist
-      tokenBlacklist.addToBlacklist(token);
+      // Remove token from cache
+      this.tokenCache.removeToken(userId);
       return true;
     } catch (error) {
       return false;
     }
   }
   
-  async register(userData: Partial<IRegisterDTO>): Promise<IRegisterDTO> {
+  public async register(userData: Partial<IRegisterDTO>): Promise<IRegisterDTO> {
     // Check if user already exists
     const existingEmail = await this.userRepository.findByEmail(userData.email || "");
     if (existingEmail) {
@@ -79,22 +77,25 @@ export class AuthService {
     // Generate verification token using JWT
     const verificationToken = jwtUtils.generateTokenForEmail(payload); // 24 hours expiry
 
+    this.tokenCache.setToken(user.user_id, verificationToken);
+
     // Send verification email
     await sendVerificationEmail(user.email, verificationToken);
   
     return user;
   }
 
-  async verifyEmail(token: string): Promise<boolean> {
+  public async verifyEmail(token: string): Promise<boolean> {
     try {
       // Verify and decode the JWT token
       const decoded = jwtUtils.verifyEmailToken(token);
-
-      console.log(decoded);
       
       if (!decoded) {
         return false;
       }
+
+      // Remove token from cache
+      this.tokenCache.removeToken(decoded.userId);
       
       // Activate user account
       await this.userRepository.update(decoded.userId, { active: true });
@@ -105,7 +106,7 @@ export class AuthService {
     }
   }
 
-  async forgotPassword(email: string): Promise<boolean> {
+  public async forgotPassword(email: string): Promise<boolean> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) return false;
     
@@ -122,7 +123,7 @@ export class AuthService {
     return true;
   }
 
-  async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<boolean> {
+  public async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<boolean> {
     const user = await this.userRepository.findById(userId);
     if (!user) return false;
 

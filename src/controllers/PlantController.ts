@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
+import { Service } from "typedi";
 import { PlantService } from "../services/PlantService";
 import { IFilterPlants, IPlant } from "../interfaces/IPlant";
 import logger from "../utils/logger";
 
+@Service()
 export class PlantController {
-  private plantService: PlantService;
+  constructor(
+    private plantService: PlantService
+  ) {}
 
-  constructor() {
-    this.plantService = new PlantService();
-  }
-
-  async getAllPlants(req: Request, res: Response): Promise<void> {
+  public async getAllPlants(req: Request, res: Response): Promise<void> {
     try {
       logger.info('Getting all plants');
       const plants = await this.plantService.getAllPlants();
@@ -22,7 +22,7 @@ export class PlantController {
     }
   }
 
-  async getPlantById(req: Request, res: Response): Promise<void> {
+  public async getPlantById(req: Request, res: Response): Promise<void> {
     try {
       const idParam = req.params.id;
       const id = parseInt(idParam);
@@ -51,7 +51,7 @@ export class PlantController {
     }
   }
 
-  async createPlant(req: Request, res: Response): Promise<void> {
+  public async createPlant(req: Request, res: Response): Promise<void> {
     try {
       logger.info('Creating new plant:', req.body);
       const plant: Partial<IPlant> = req.body;
@@ -72,7 +72,7 @@ export class PlantController {
     }
   }
 
-  async updatePlant(req: Request, res: Response): Promise<void> {
+  public async updatePlant(req: Request, res: Response): Promise<void> {
     try {
       const idParam = req.params.id;
       const id = parseInt(idParam);
@@ -110,7 +110,7 @@ export class PlantController {
     }
   }
 
-  async deletePlant(req: Request, res: Response): Promise<void> {
+  public async deletePlant(req: Request, res: Response): Promise<void> {
     try {
       const idParam = req.params.id;
       const id = parseInt(idParam);
@@ -139,7 +139,7 @@ export class PlantController {
     }
   }
 
-  async filterPlants(req: Request, res: Response): Promise<void> {
+  public async filterPlants(req: Request, res: Response): Promise<void> {
     try {
       const { name, divisionId, classId, orderId, speciesId, genusId, familyId } = req.query;
       

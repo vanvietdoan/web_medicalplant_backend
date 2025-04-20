@@ -9,4 +9,5 @@ export interface IDisease {
   symptoms: string;
   created_at: Date;
   updated_at: Date;
+  instructions: string;
 } 

@@ -14,14 +14,14 @@ export class AdviceCommentRepository {
 
   public async findAll(): Promise<AdviceComment[]> {
     return this.repository.find({
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 
   public async findById(id: number): Promise<AdviceComment | null> {
     return this.repository.findOne({
       where: { advice_id: id },
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 
@@ -43,35 +43,35 @@ export class AdviceCommentRepository {
   public async findByUser(userId: number): Promise<AdviceComment[]> {
     return this.repository.find({
       where: { user_id: userId },
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 
   public async findByPlant(plantId: number): Promise<AdviceComment[]> {
     return this.repository.find({
       where: { plant: { plant_id: plantId } },
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 
   public async findByDisease(diseaseId: number): Promise<AdviceComment[]> {
     return this.repository.find({
       where: { disease: { disease_id: diseaseId } },
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 
   public async searchByTitle(title: string): Promise<AdviceComment[]> {
     return this.repository.find({
       where: { title: ILike(`%${title}%`) },
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 
   public async searchByContent(content: string): Promise<AdviceComment[]> {
     return this.repository.find({
       where: { content: ILike(`%${content}%`) },
-      relations: ["plant", "disease"]
+      relations: ["plant", "disease",'user']
     });
   }
 } 

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { IAdviceComment } from "../interfaces/IAdviceComment";
 import { User } from "./User";
 import { Plant } from "./Plant";
@@ -26,11 +26,14 @@ export class AdviceComment extends BaseEntity implements IAdviceComment {
   disease_id!: number;
 
   @ManyToOne(() => User, user => user.user_id)
+  @JoinColumn({ name: "user_id" })
   user!: User;
 
   @ManyToOne(() => Plant, plant => plant.plant_id)
+  @JoinColumn({ name: "plant_id" })
   plant!: Plant;
 
   @ManyToOne(() => Disease, disease => disease.disease_id)
+  @JoinColumn({ name: "disease_id" })
   disease!: Disease;
 }

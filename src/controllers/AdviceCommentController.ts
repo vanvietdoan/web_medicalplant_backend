@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Service } from "typedi";
 import { AdviceCommentService } from "../services/AdviceCommentService";
-import { IAdviceComment } from "../interfaces/IAdviceComment";
+import { IAdviceComment, IAdviceCommentRequest } from "../interfaces/IAdviceComment";
 
 @Service()
 export class AdviceCommentController {
@@ -64,11 +64,11 @@ export class AdviceCommentController {
 
   public async createAdviceComment(req: Request, res: Response): Promise<void> {
     try {
-      const adviceComment: Partial<IAdviceComment> = req.body;
-      const newAdviceComment = await this.adviceCommentService.createAdviceComment(adviceComment);
-      res.status(201).json(newAdviceComment); return;
+      const adviceCommentRequest: IAdviceCommentRequest = req.body;
+      const newAdviceComment = await this.adviceCommentService.createAdviceComment(adviceCommentRequest);
+      res.status(201).json(newAdviceComment);
     } catch (error) {
-      res.status(500).json({ message: "Error creating advice comment", error }); return;
+      res.status(500).json({ message: "Error creating advice comment", error });
     }
   }
 

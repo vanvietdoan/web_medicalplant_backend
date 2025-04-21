@@ -15,3 +15,10 @@ export interface IAdviceComment {
   plant: Plant;
   disease: Disease;
 } 
+export interface IAdviceCommentRequest {
+  title: string;
+  content: string;
+  plant_id: number;
+  disease_id: number;
+  user_id: number;
+} 

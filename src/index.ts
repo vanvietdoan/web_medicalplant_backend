@@ -9,6 +9,7 @@ import reportRoutes from "./routes/reportRoutes";
 import authRoutes from "./routes/authRoutes";
 import uploadRoutes from './routes/uploadRoutes';
 import divisionRoutes from './routes/divisionRoutes';
+import adviceRoutes from './routes/adviceCommentRoutes';
 import config from "./utils/config";
 import logger from "./utils/logger";
 import path from "path";
@@ -23,6 +24,7 @@ import "./utils/tokenCache";
 import "./repositories/UserRepository";
 import "./services/AuthService";
 import "./controllers/AuthController";
+import classRoutes from './routes/classRoutes';
 
 // Set up TypeDI as the container for TypeORM
 useContainer(Container);
@@ -42,7 +44,11 @@ app.use("/api/plants", plantRoutes);
 app.use("/api/diseases", diseaseRoutes);
 app.use("/api/reports", reportRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use("/api/advice", adviceRoutes);
+
+
 app.use("/api/divisions", divisionRoutes);
+app.use("/api/classes", classRoutes);
 
 // Initialize database connection
 AppDataSource.initialize()

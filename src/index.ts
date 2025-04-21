@@ -25,6 +25,7 @@ import "./repositories/UserRepository";
 import "./services/AuthService";
 import "./controllers/AuthController";
 import classRoutes from './routes/classRoutes';
+import orderRoutes from './routes/orderRoutes';
 
 // Set up TypeDI as the container for TypeORM
 useContainer(Container);
@@ -49,7 +50,7 @@ app.use("/api/advice", adviceRoutes);
 
 app.use("/api/divisions", divisionRoutes);
 app.use("/api/classes", classRoutes);
-
+app.use("/api/orders", orderRoutes);
 // Initialize database connection
 AppDataSource.initialize()
   .then(() => {

@@ -4,7 +4,7 @@ import { Family } from "./Family";
 import { Species } from "./Species";
 import { BaseEntity } from "./BaseEntity";
 
-@Entity({ name: "genus"})
+@Entity({ name: "genuses"})
 export class Genus extends BaseEntity implements IGenus {
   @PrimaryGeneratedColumn()
   genus_id!: number;

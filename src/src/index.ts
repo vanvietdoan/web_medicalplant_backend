@@ -1,5 +1,7 @@
 import 'reflect-metadata';
+import { Container } from "typedi";
 import express from "express";
+import { useContainer } from "typeorm";
 import cors from "cors";
 import { AppDataSource } from "./config/database";
 import userRoutes from "./routes/userRoutes";
@@ -9,25 +11,19 @@ import reportRoutes from "./routes/reportRoutes";
 import authRoutes from "./routes/authRoutes";
 import uploadRoutes from './routes/uploadRoutes';
 import divisionRoutes from './routes/divisionRoutes';
-import familyRoutes from './routes/familyRoutes'
 import adviceRoutes from './routes/adviceCommentRoutes';
+import pictureRoutes from './routes/pictureRoutes';
+import classRoutes from './routes/classRoutes';
+import orderRoutes from './routes/orderRoutes';
 import config from "./utils/config";
 import logger from "./utils/logger";
 import path from "path";
-import { useContainer } from "typeorm";
-import { Container } from "typedi";
 
-// Đảm bảo reflect-metadata được import đầu tiên
-import 'reflect-metadata';
-
-// Khởi tạo các thành phần cốt lõi để Dependency Injection có thể hoạt động
 import "./utils/tokenCache";
 import "./repositories/UserRepository";
 import "./services/AuthService";
 import "./controllers/AuthController";
-import classRoutes from './routes/classRoutes';
-import orderRoutes from './routes/orderRoutes';
-import  genusRoutes from './routes/genusRoutes';
+
 
 // Set up TypeDI as the container for TypeORM
 useContainer(Container);
@@ -48,13 +44,10 @@ app.use("/api/diseases", diseaseRoutes);
 app.use("/api/reports", reportRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use("/api/advice", adviceRoutes);
-
-
+app.use("/api/pictures", pictureRoutes);
 app.use("/api/divisions", divisionRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/orders", orderRoutes);
-app.use("/api/family",familyRoutes);
-app.use("/api/genus",genusRoutes)
 // Initialize database connection
 AppDataSource.initialize()
   .then(() => {

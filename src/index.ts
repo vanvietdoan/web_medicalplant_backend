@@ -28,6 +28,7 @@ import "./controllers/AuthController";
 import classRoutes from './routes/classRoutes';
 import orderRoutes from './routes/orderRoutes';
 import  genusRoutes from './routes/genusRoutes';
+import speciesRoutes from './routes/speciesRoutes';
 
 // Set up TypeDI as the container for TypeORM
 useContainer(Container);
@@ -55,6 +56,7 @@ app.use("/api/classes", classRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/family",familyRoutes);
 app.use("/api/genus",genusRoutes)
+app.use("/api/species",speciesRoutes)
 // Initialize database connection
 AppDataSource.initialize()
   .then(() => {

@@ -38,7 +38,7 @@ export class AuthController {
           user: {
             id: result.user.user_id,
             email: result.user.email,
-            fullName: result.user.full_name,
+            full_name: result.user.full_name,
             role: result.user.role?.name
           }
         });
@@ -100,7 +100,7 @@ export class AuthController {
       const result = await this.authService.verifyEmail(token);
       if (result) {
         logger.info(`Successfully verified email for token: ${token}`);
-        res.json({ message: "Email verified successfully" });
+        res.sendFile('email-verified.html', { root: './src/views' });
       } else {
         logger.warn(`Invalid verification token: ${token}`);
         res.status(400).json({ message: "Invalid or expired verification token" });

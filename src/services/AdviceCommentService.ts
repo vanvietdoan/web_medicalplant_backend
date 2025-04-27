@@ -69,47 +69,54 @@ export class AdviceCommentService {
   }
 
   public async getAdviceCommentsByPlant(plantId: number): Promise<any[]> {
-    const adviceComments = await this.adviceCommentRepository.findByPlant(plantId);
+    let adviceComments = await this.adviceCommentRepository.findByPlant(plantId);
+    console.log("adviceComments service: ", adviceComments);
+    if (!adviceComments) {
+      return [];
+    }
     return adviceComments.map(comment => ({
       created_at: comment.created_at,
       updated_at: comment.updated_at,
       title: comment.title,
       content: comment.content,
       plant: {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
+        plant_id: comment.plant?.plant_id,
+        name: comment.plant?.name
       },
       disease: {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
+        disease_id: comment.disease?.disease_id,
+        name: comment.disease?.name
       },
       user: {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        title: comment.user.title
+        user_id: comment.user?.user_id,
+        full_name: comment.user?.full_name,
+        title: comment.user?.title
       }
     }));
   }
 
   public async getAdviceCommentsByDisease(diseaseId: number): Promise<any[]> {
     const adviceComments = await this.adviceCommentRepository.findByDisease(diseaseId);
+    if (!adviceComments) {
+      return [];
+    }
     return adviceComments.map(comment => ({
       created_at: comment.created_at,
       updated_at: comment.updated_at,
       title: comment.title,
       content: comment.content,
       plant: {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
+        plant_id: comment.plant?.plant_id,
+        name: comment.plant?.name
       },
       disease: {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
+        disease_id: comment.disease?.disease_id,
+        name: comment.disease?.name
       },
       user: {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        title: comment.user.title
+        user_id: comment.user?.user_id,
+        full_name: comment.user?.full_name,
+        title: comment.user?.title
       }
     }));
   }

@@ -51,6 +51,7 @@ export class AdviceCommentController {
     try {
       const plantId = parseInt(req.params.plantId);
       const adviceComments = await this.adviceCommentService.getAdviceCommentsByPlant(plantId);
+      console.log("adviceComments controller: ", adviceComments);
       res.json(adviceComments);
     } catch (error) {
       res.status(500).json({ message: "Error fetching plant's advice comments", error }); return;
@@ -70,7 +71,9 @@ export class AdviceCommentController {
   public async createAdviceComment(req: Request, res: Response): Promise<void> {
     try {
       const adviceCommentRequest: IAdviceCommentRequest = req.body;
+
       const newAdviceComment = await this.adviceCommentService.createAdviceComment(adviceCommentRequest);
+
       res.status(201).json(newAdviceComment);
     } catch (error) {
       res.status(500).json({ message: "Error creating advice comment", error });

@@ -101,11 +101,20 @@ export class PlantService {
   public async filterPlants( filter: IFilterPlants): Promise<IPlant[]> {
     logger.info('Filtering plants:', filter);
     const plants = await this.plantRepository.filterPlants(filter);
-
-    if (plants.length === 0){
-      logger.warn('No plants found with the given filter');
+    const pictures = await this.pictureRepository.findAll();
+    if (!plants) {
+      return [];
     }
-    return plants;
+    return plants.map(plant => ({
+      ...plant,
+      images: pictures
+        .filter((picture: Picture) => picture.plant_id === plant.plant_id)
+        .map((picture: Picture) => ({
+          picture_id: picture.picture_id,
+          url: picture.url
+        }))
+    }));
+
   }
 
 }

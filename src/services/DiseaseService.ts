@@ -55,12 +55,43 @@ export class DiseaseService {
     };
   }
 
-  public async createDisease(disease: Partial<IDisease>): Promise<IDisease> {
-    return this.diseaseRepository.create(disease);
+  public async createDisease(diseaseData: Partial<IDisease> & { images?: Array<{ url: string }> }): Promise<IDisease> {
+    const { images, ...diseaseInfo } = diseaseData;
+    const newDisease = await this.diseaseRepository.create(diseaseInfo);
+    
+    if (images && images.length > 0) {
+      await Promise.all(images.map(image => 
+        this.pictureRepository.create({
+          url: image.url,
+          disease_id: newDisease.disease_id
+        })
+      ));
+    }
+    
+    return this.getDiseaseById(newDisease.disease_id) as Promise<IDisease>;
   }
 
-  public async updateDisease(id: number, disease: Partial<IDisease>): Promise<IDisease | null> {
-    return this.diseaseRepository.update(id, disease);
+  public async updateDisease(id: number, diseaseData: Partial<IDisease> & { images?: Array<{ url: string }> }): Promise<IDisease | null> {
+    const { images, ...diseaseInfo } = diseaseData;
+    await this.diseaseRepository.update(id, diseaseInfo);
+    
+    if (images) {
+      // Delete existing pictures for this disease
+      const existingPictures = await this.pictureRepository.findByDisease(id);
+      await Promise.all(existingPictures.map(picture => 
+        this.pictureRepository.delete(picture.picture_id)
+      ));
+      
+      // Create new pictures
+      await Promise.all(images.map(image => 
+        this.pictureRepository.create({
+          url: image.url,
+          disease_id: id
+        })
+      ));
+    }
+    
+    return this.getDiseaseById(id);
   }
 
   public async deleteDisease(id: number): Promise<boolean> {

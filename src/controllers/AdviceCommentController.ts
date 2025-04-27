@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { Service } from "typedi";
 import { AdviceCommentService } from "../services/AdviceCommentService";
 import { IAdviceComment, IAdviceCommentRequest } from "../interfaces/IAdviceComment";
+import logger from "../utils/logger";
+
 
 @Service()
 export class AdviceCommentController {
@@ -12,9 +14,12 @@ export class AdviceCommentController {
 
   public async getAllAdviceComments(req: Request, res: Response): Promise<void> {
     try {
+      logger.info('Getting all advice comments');
       const adviceComments = await this.adviceCommentService.getAllAdviceComments();
+      logger.info('Successfully retrieved all advice comments');
       res.json(adviceComments);
     } catch (error) {
+      logger.error('Error fetching advice comments:', error);
       res.status(500).json({ message: "Error fetching advice comments", error }); return;
     }
   }

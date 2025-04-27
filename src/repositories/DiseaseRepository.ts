@@ -4,6 +4,7 @@ import { AppDataSource } from "../config/database";
 import { Disease } from "../entities/Disease";
 import { ILike } from "typeorm";
 
+
 @Service()
 export class DiseaseRepository {
   private repository: Repository<Disease>;
@@ -13,7 +14,9 @@ export class DiseaseRepository {
   }
 
   public async findAll(): Promise<Disease[]> {
-    return this.repository.find();
+    console.log('Repository findAll');
+    return this.repository.find({
+    });
   }
 
   public async findById(id: number): Promise<Disease | null> {

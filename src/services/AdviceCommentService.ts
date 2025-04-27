@@ -4,7 +4,7 @@ import { Service } from "typedi";
 import { AdviceComment } from '../entities/AdviceComment';
 import { User } from "../entities/User";
 import { IAdviceCommentRequest } from "../interfaces/IAdviceComment";
-
+import logger from "../utils/logger";
 @Service()
 export class AdviceCommentService {
   private adviceCommentRepository: AdviceCommentRepository;
@@ -14,33 +14,16 @@ export class AdviceCommentService {
   }
 
   public async getAllAdviceComments(): Promise<any[]> {
-    const adviceComments = await this.adviceCommentRepository.findAll();
-    return adviceComments.map(comment => ({
-      advice_id: comment.advice_id,
-      created_at: comment.created_at,
-      updated_at: comment.updated_at,
-      title: comment.title,
-      content: comment.content,
-      plant: {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
-      },
-      disease: {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
-      },
-      user: {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        title: comment.user.title
-      }
-    }));
+    logger.info('Service getAllAdviceComments');
+    return this.adviceCommentRepository.findAll();
+    
+
   }
 
   public async getAdviceCommentById(id: number): Promise<any | null> {
     const comment = await this.adviceCommentRepository.findById(id);
     if (!comment) return null;
-    
+    logger.info('Service getAdviceCommentById', comment);
     return {
       created_at: comment.created_at,
       updated_at: comment.updated_at,

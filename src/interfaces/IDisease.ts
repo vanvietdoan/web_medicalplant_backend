@@ -10,4 +10,8 @@ export interface IDisease {
   created_at: Date;
   updated_at: Date;
   instructions: string;
+  images?: Array<{
+    picture_id: number;
+    url: string;
+  }>;
 } 

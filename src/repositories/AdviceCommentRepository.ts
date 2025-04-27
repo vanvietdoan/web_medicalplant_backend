@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { IsNull, Not, Repository } from "typeorm";
 import { Service } from "typedi";
 import { AppDataSource } from "../config/database";
 import { AdviceComment } from "../entities/AdviceComment";

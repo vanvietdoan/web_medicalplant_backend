@@ -11,6 +11,7 @@ export class DiseaseController {
 
   public async getAllDiseases(req: Request, res: Response): Promise<void> {
     try {
+      console.log('Controller getAllDiseases');
       const diseases = await this.diseaseService.getAllDiseases();
       res.json(diseases);
     } catch (error) {

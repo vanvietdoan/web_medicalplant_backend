@@ -13,8 +13,10 @@ export interface IPlant {
   created_at: Date;
   updated_at: Date;
   species: Species;
-  // images: Picture[];
-  // plant_diseases: PlantDisease[];
+  images?: Array<{
+    picture_id: number;
+    url: string;
+  }>;
 } 
 
 export interface IFilterPlants {

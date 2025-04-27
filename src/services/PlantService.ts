@@ -1,48 +1,90 @@
 import { Service } from "typedi";
 import { PlantRepository } from "../repositories/PlantRepository";
 import { IPlant, IFilterPlants } from "../interfaces/IPlant";
+import { PictureRepository } from "../repositories/PictureRepository";
+import { Picture } from "../entities/Picture";
 import logger  from "../utils/logger";
 
 @Service()
 export class PlantService {
   private plantRepository: PlantRepository;
-
+  private pictureRepository: PictureRepository;
   constructor() {
     this.plantRepository = new PlantRepository();
-  }
+    this.pictureRepository = new PictureRepository();
+    }
 
-  public async getAllPlants(): Promise<IPlant[]> {
-    logger.info('Service getAllPlants');
-    return this.plantRepository.findAll();
-  }
-
+    public async getAllPlants(): Promise<any[]> {
+      console.log('Service getAllPlants');
+      const plants = await this.plantRepository.findAll();
+      const pictures = await this.pictureRepository.findAll();
+      
+      return plants.map(plant => ({
+        created_at: plant.created_at,
+        updated_at: plant.updated_at,
+        plant_id: plant.plant_id,
+        name: plant.name,
+        english_name: plant.english_name,
+        description: plant.description,
+        species_id: plant.species_id, 
+        instructions: plant.instructions,
+        benefits: plant.benefits,
+        images: pictures
+          .filter((picture: Picture) => picture.plant_id === plant.plant_id)
+          .map((picture: Picture) => ({
+            picture_id: picture.picture_id,
+            url: picture.url
+          }))
+      }));
+    }
   public async getPlantById(id: number): Promise<IPlant | null> {
-    logger.info(`Fetching plant with id: ${id}`);
+    console.log('Service getPlantById', id);
     const plant = await this.plantRepository.findById(id);
-    if (plant) {
-      logger.info(`Found plant: ${plant.name}`);
-    } else {
-      logger.warn(`Plant with id ${id} not found`);
+    const pictures = await this.pictureRepository.findAll();
+    if (!plant) {
+      return null;
     }
-    return plant;
+    return {
+      ...plant,
+      images: pictures
+        .filter((picture: Picture) => picture.plant_id === id)
+        .map((picture: Picture) => ({
+          picture_id: picture.picture_id,
+          url: picture.url
+        }))
+    };
   }
 
-  public async createPlant(plant: Partial<IPlant>): Promise<IPlant> {
-    logger.info('Creating new plant:', plant);
-    const createdPlant = await this.plantRepository.create(plant);
-    logger.info(`Plant created successfully with id: ${createdPlant.plant_id}`);
-    return createdPlant;
+  public async createPlant(plantData: Partial<IPlant> & { images?: Array<{ url: string }> }): Promise<IPlant> {
+    const { images, ...plantInfo } = plantData;
+    const createdPlant = await this.plantRepository.create(plantInfo);
+    if (images && images.length > 0) {
+      await Promise.all(images.map(image => 
+        this.pictureRepository.create({
+          url: image.url,
+          plant_id: createdPlant.plant_id
+        })
+      ));
+    }
+    return this.getPlantById(createdPlant.plant_id) as Promise<IPlant>;
   }
 
-  public async updatePlant(id: number, plant: Partial<IPlant>): Promise<IPlant | null> {
-    logger.info(`Updating plant with id ${id}:`, plant);
-    const updatedPlant = await this.plantRepository.update(id, plant);
-    if (updatedPlant) {
-      logger.info(`Plant ${id} updated successfully`);
-    } else {
-      logger.warn(`Failed to update plant ${id} - not found`);
+  public async updatePlant(id: number, plantData: Partial<IPlant> & { images?: Array<{ url: string }> }): Promise<IPlant | null> {
+    const { images, ...plantInfo } = plantData;
+    await this.plantRepository.update(id, plantInfo);
+    if (images) {
+      const existingPictures = await this.pictureRepository.findByPlant(id);
+      await Promise.all(existingPictures.map(picture => 
+        this.pictureRepository.delete(picture.picture_id)
+      ));
+      await Promise.all(images.map(image => 
+        this.pictureRepository.create({
+          url: image.url,
+          plant_id: id
+        })
+      ));
     }
-    return updatedPlant;
+    return this.getPlantById(id) as Promise<IPlant>;
   }
 
   public async deletePlant(id: number): Promise<boolean> {

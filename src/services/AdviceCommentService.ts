@@ -15,9 +15,27 @@ export class AdviceCommentService {
 
   public async getAllAdviceComments(): Promise<any[]> {
     logger.info('Service getAllAdviceComments');
-    return this.adviceCommentRepository.findAll();
-    
-
+    const adviceComments = await this.adviceCommentRepository.findAll();
+    return adviceComments.map(comment => ({
+      advice_id: comment.advice_id,
+      created_at: comment.created_at,
+      updated_at: comment.updated_at,
+      title: comment.title,
+      content: comment.content,
+      plant: comment.plant ? {
+        plant_id: comment.plant.plant_id,
+        name: comment.plant.name
+      } : null,
+      disease: comment.disease ? {
+        disease_id: comment.disease.disease_id,
+        name: comment.disease.name
+      } : null,
+      user: comment.user ? {
+        user_id: comment.user.user_id,
+        full_name: comment.user.full_name,
+        title: comment.user.title
+      } : null
+    }));
   }
 
   public async getAdviceCommentById(id: number): Promise<any | null> {
@@ -48,23 +66,23 @@ export class AdviceCommentService {
   public async getAdviceCommentsByUser(userId: number): Promise<any[]> {
     const adviceComments = await this.adviceCommentRepository.findByUser(userId);
     return adviceComments.map(comment => ({
+      advice_id: comment.advice_id,
       created_at: comment.created_at,
       updated_at: comment.updated_at,
       title: comment.title,
       content: comment.content,
-      plant: {
+      plant: comment.plant ? {
         plant_id: comment.plant.plant_id,
         name: comment.plant.name
-      },
-      disease: {
+      } : null,
+      disease: comment.disease ? {
         disease_id: comment.disease.disease_id,
         name: comment.disease.name
-      },
-      user: {
+      } : null,
+      user: comment.user ? {
         user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        title: comment.user.title
-      }
+        full_name: comment.user.full_name
+      } : null
     }));
   }
 
@@ -75,6 +93,7 @@ export class AdviceCommentService {
       return [];
     }
     return adviceComments.map(comment => ({
+      advice_id: comment.advice_id,
       created_at: comment.created_at,
       updated_at: comment.updated_at,
       title: comment.title,
@@ -101,6 +120,7 @@ export class AdviceCommentService {
       return [];
     }
     return adviceComments.map(comment => ({
+      advice_id: comment.advice_id,
       created_at: comment.created_at,
       updated_at: comment.updated_at,
       title: comment.title,
@@ -144,14 +164,34 @@ export class AdviceCommentService {
       },
       user: {
         user_id: createdComment.user.user_id,
-        full_name: createdComment.user.full_name,
-        title: createdComment.user.title
+        full_name: createdComment.user.full_name
       }
     };
   }
 
-  public async updateAdviceComment(id: number, adviceComment: Partial<IAdviceComment>): Promise<IAdviceComment | null> {
-    return this.adviceCommentRepository.update(id, adviceComment);
+  public async updateAdviceComment(id: number, adviceComment: Partial<IAdviceComment>): Promise<any | null> {
+    const updatedComment = await this.adviceCommentRepository.update(id, adviceComment);
+    if (!updatedComment) return null;
+    
+    return {
+      advice_id: updatedComment.advice_id,
+      created_at: updatedComment.created_at,
+      updated_at: updatedComment.updated_at,
+      title: updatedComment.title,
+      content: updatedComment.content,
+      plant: updatedComment.plant ? {
+        plant_id: updatedComment.plant.plant_id,
+        name: updatedComment.plant.name
+      } : null,
+      disease: updatedComment.disease ? {
+        disease_id: updatedComment.disease.disease_id,
+        name: updatedComment.disease.name
+      } : null,
+      user: updatedComment.user ? {
+        user_id: updatedComment.user.user_id,
+        full_name: updatedComment.user.full_name
+      } : null
+    };
   }
 
   public async deleteAdviceComment(id: number): Promise<boolean> {

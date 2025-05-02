@@ -7,9 +7,9 @@ const config = {
   database: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '3306', 10),
-    username: process.env.DB_USERNAME || 'root',
-    password: process.env.DB_PASSWORD || 'pElSH2Tz1y1yIY8',
-    name: process.env.DB_DATABASE || 'datn',
+    username: process.env.DB_USERNAME || 'v9xk856g74ef_datn2',
+    password: process.env.DB_PASSWORD || 'datn2datn2datn2',
+    name: process.env.DB_DATABASE || 'v9xk856g74ef_datn',
   },
   smtp: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',

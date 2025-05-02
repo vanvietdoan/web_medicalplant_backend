@@ -6,12 +6,10 @@ import { auth } from "../middleware/auth";
 const router = Router();
 const userController = Container.get(UserController);
 
-// Get all users
-router.get("/", auth, userController.getUsers.bind(userController));
-
-// Get user by id
-router.get("/:id", auth, userController.getUserById.bind(userController));
-
+// public
+router.get("/", userController.getUsers.bind(userController));
+router.get("/:id", userController.getUserById.bind(userController));
+    
 // Create new user
 router.post("/", auth, userController.createUser.bind(userController));
 

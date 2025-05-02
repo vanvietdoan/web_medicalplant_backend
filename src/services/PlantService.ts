@@ -26,7 +26,10 @@ export class PlantService {
         name: plant.name,
         english_name: plant.english_name,
         description: plant.description,
-        species_id: plant.species_id, 
+        species: plant.species ? {
+          species_id: plant.species.species_id,
+          name: plant.species.name
+        } : null,
         instructions: plant.instructions,
         benefits: plant.benefits,
         images: pictures

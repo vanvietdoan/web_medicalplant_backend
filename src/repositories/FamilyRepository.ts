@@ -13,15 +13,12 @@ export class FamilyRepository {
   }
 
   public async findAll(): Promise<Family[]> {
-    return this.repository.find({
-      relations: ["order"]
-    });
+    return this.repository.find();
   }
 
   public async findById(id: number): Promise<Family | null> {
     return this.repository.findOne({
-      where: { family_id: id },
-      relations: ["order"]
+      where: { family_id: id }
     });
   }
 

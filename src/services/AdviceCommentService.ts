@@ -47,19 +47,19 @@ export class AdviceCommentService {
       updated_at: comment.updated_at,
       title: comment.title,
       content: comment.content,
-      plant: {
+      plant: comment.plant ? {
         plant_id: comment.plant.plant_id,
         name: comment.plant.name
-      },
-      disease: {
+      } : null,
+      disease: comment.disease ? {
         disease_id: comment.disease.disease_id,
         name: comment.disease.name
-      },
-      user: {
+      } : null,
+      user: comment.user ? {
         user_id: comment.user.user_id,
         full_name: comment.user.full_name,
         title: comment.user.title
-      }
+      } : null
     };
   }
 
@@ -98,19 +98,18 @@ export class AdviceCommentService {
       updated_at: comment.updated_at,
       title: comment.title,
       content: comment.content,
-      plant: {
-        plant_id: comment.plant?.plant_id,
-        name: comment.plant?.name
-      },
-      disease: {
-        disease_id: comment.disease?.disease_id,
-        name: comment.disease?.name
-      },
-      user: {
-        user_id: comment.user?.user_id,
-        full_name: comment.user?.full_name,
-        title: comment.user?.title
-      }
+      plant: comment.plant ? {
+        plant_id: comment.plant.plant_id,
+        name: comment.plant.name
+      } : null,
+      disease: comment.disease ? {
+        disease_id: comment.disease.disease_id,
+        name: comment.disease.name
+      } : null,
+      user: comment.user ? {
+        user_id: comment.user.user_id,
+        full_name: comment.user.full_name
+      } : null
     }));
   }
 
@@ -125,19 +124,18 @@ export class AdviceCommentService {
       updated_at: comment.updated_at,
       title: comment.title,
       content: comment.content,
-      plant: {
-        plant_id: comment.plant?.plant_id,
-        name: comment.plant?.name
-      },
-      disease: {
-        disease_id: comment.disease?.disease_id,
-        name: comment.disease?.name
-      },
-      user: {
-        user_id: comment.user?.user_id,
-        full_name: comment.user?.full_name,
-        title: comment.user?.title
-      }
+      plant: comment.plant ? {
+        plant_id: comment.plant.plant_id,
+        name: comment.plant.name
+      } : null,
+      disease: comment.disease ? {
+        disease_id: comment.disease.disease_id,
+        name: comment.disease.name
+      } : null,
+      user: comment.user ? {
+        user_id: comment.user.user_id,
+        full_name: comment.user.full_name
+      } : null
     }));
   }
 
@@ -154,18 +152,18 @@ export class AdviceCommentService {
       updated_at: createdComment.updated_at,
       title: createdComment.title,
       content: createdComment.content,
-      plant: {
+      plant: createdComment.plant ? {
         plant_id: createdComment.plant.plant_id,
         name: createdComment.plant.name
-      },
-      disease: {
+      } : null,
+      disease: createdComment.disease ? {
         disease_id: createdComment.disease.disease_id,
         name: createdComment.disease.name
-      },
-      user: {
+      } : null,
+      user: createdComment.user ? {
         user_id: createdComment.user.user_id,
         full_name: createdComment.user.full_name
-      }
+      } : null
     };
   }
 

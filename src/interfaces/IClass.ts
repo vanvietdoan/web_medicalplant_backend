@@ -17,4 +17,4 @@ export interface IClassResponse {
   class_id: number;
   name: string;
   division_id: number;
-  } 
+} 

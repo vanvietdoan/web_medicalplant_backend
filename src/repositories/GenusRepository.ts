@@ -13,15 +13,12 @@ export class GenusRepository {
   }
 
   public async findAll(): Promise<Genus[]> {
-    return this.repository.find({
-      relations: ["family"]
-    });
+    return this.repository.find();
   }
 
   public async findById(id: number): Promise<Genus | null> {
     return this.repository.findOne({
-      where: { genus_id: id },
-      relations: ["family"]
+      where: { genus_id: id }
     });
   }
 

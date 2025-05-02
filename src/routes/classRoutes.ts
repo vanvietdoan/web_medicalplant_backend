@@ -8,7 +8,7 @@ const classController = Container.get(ClassController);
 
 router.get("/search", classController.searchClasses.bind(classController));
 router.get("/", classController.getAllClasses.bind(classController));
-router.get("/:id", auth, classController.getClassById.bind(classController));
+router.get("/:id",  classController.getClassById.bind(classController));
 router.post("/", auth, classController.createClass.bind(classController));
 router.put("/:id", auth, classController.updateClass.bind(classController));
 router.delete("/:id", auth, classController.deleteClass.bind(classController));

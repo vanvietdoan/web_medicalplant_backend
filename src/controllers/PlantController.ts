@@ -21,6 +21,18 @@ export class PlantController {
       res.status(500).json({ message: "Error fetching plants", error });
     }
   }
+  
+  public async getNewPlants(req: Request, res: Response): Promise<void> {
+    try {
+      logger.info('Getting new plants');
+      const plants = await this.plantService.getNewPlants();
+      logger.info('Successfully retrieved new plants');
+      res.json(plants);
+    } catch (error) {
+      logger.error('Error fetching plants:', error);
+      res.status(500).json({ message: "Error fetching plants", error });
+    }
+  }
 
   public async getPlantById(req: Request, res: Response): Promise<void> {
     try {
@@ -30,7 +42,7 @@ export class PlantController {
       // Check if id is a valid number
       if (isNaN(id)) {
         logger.warn(`Invalid plant id provided: ${idParam}`);
-        res.status(400).json({ message: "Invalid plant ID. Please provide a numeric ID." });
+        res.status(400).json({ message: "Invalid plant ID to get. Please provide a numeric ID." });
         return;
       }
       
@@ -58,7 +70,7 @@ export class PlantController {
       
       // Basic validation
       if (!plant.name || !plant.species_id) {
-        logger.warn('Invalid plant data:', plant);
+        logger.warn('Invalid plant data to create:', plant);
         res.status(400).json({ message: "Plant name and species_id are required" });
         return;
       }
@@ -80,7 +92,7 @@ export class PlantController {
       // Check if id is a valid number
       if (isNaN(id)) {
         logger.warn(`Invalid plant id provided for update: ${idParam}`);
-        res.status(400).json({ message: "Invalid plant ID. Please provide a numeric ID." });
+        res.status(400).json({ message: "Invalid plant ID to update. Please provide a numeric ID." });
         return;
       }
       
@@ -112,13 +124,9 @@ export class PlantController {
 
   public async deletePlant(req: Request, res: Response): Promise<void> {
     try {
-      const idParam = req.params.id;
-      const id = parseInt(idParam);
-      
-      // Check if id is a valid number
+      const id = parseInt(req.params.id);
       if (isNaN(id)) {
-        logger.warn(`Invalid plant id provided for deletion: ${idParam}`);
-        res.status(400).json({ message: "Invalid plant ID. Please provide a numeric ID." });
+        res.status(400).json({ message: "Invalid plant ID to delete. Please provide a numeric ID." });
         return;
       }
       

@@ -33,7 +33,8 @@ export class AdviceCommentService {
       user: comment.user ? {
         user_id: comment.user.user_id,
         full_name: comment.user.full_name,
-        title: comment.user.title
+        title: comment.user.title,
+        avatar : comment.user.avatar
       } : null
     }));
   }
@@ -58,7 +59,8 @@ export class AdviceCommentService {
       user: comment.user ? {
         user_id: comment.user.user_id,
         full_name: comment.user.full_name,
-        title: comment.user.title
+        title: comment.user.title,
+        avatar : comment.user.avatar
       } : null
     };
   }
@@ -81,7 +83,11 @@ export class AdviceCommentService {
       } : null,
       user: comment.user ? {
         user_id: comment.user.user_id,
-        full_name: comment.user.full_name
+        full_name: comment.user.full_name,
+        
+        title: comment.user.title,
+        
+        avatar : comment.user.avatar
       } : null
     }));
   }
@@ -108,7 +114,11 @@ export class AdviceCommentService {
       } : null,
       user: comment.user ? {
         user_id: comment.user.user_id,
-        full_name: comment.user.full_name
+        full_name: comment.user.full_name,
+        
+        title: comment.user.title,
+        
+        avatar : comment.user.avatar
       } : null
     }));
   }
@@ -134,7 +144,10 @@ export class AdviceCommentService {
       } : null,
       user: comment.user ? {
         user_id: comment.user.user_id,
-        full_name: comment.user.full_name
+        full_name: comment.user.full_name,
+        title: comment.user.title,
+        
+        avatar : comment.user.avatar
       } : null
     }));
   }

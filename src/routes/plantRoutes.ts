@@ -6,10 +6,10 @@ import { auth } from "../middleware/auth";
 const router = Router();
 const plantController = Container.get(PlantController);
 
-// Search routes
-router.get('/filter-plant', plantController.filterPlants.bind(plantController));
 // Public routes
 router.get("/", plantController.getAllPlants.bind(plantController));
+router.get("/new-plants", plantController.getNewPlants.bind(plantController));
+router.get("/filter-plant", plantController.filterPlants.bind(plantController));
 router.get("/:id", plantController.getPlantById.bind(plantController));
 
 // Protected routes

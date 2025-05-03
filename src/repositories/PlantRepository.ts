@@ -1,4 +1,4 @@
-import { Repository, ILike } from "typeorm";
+import { Repository, ILike, MoreThan } from "typeorm";
 import { AppDataSource } from "../config/database";
 import { Plant } from "../entities/Plant";
 import { IPlant, IFilterPlants } from "../interfaces/IPlant";
@@ -16,6 +16,20 @@ export class PlantRepository {
   public async findAll(): Promise<IPlant[]> {
     logger.info('Finding all plants');
     return this.repository.find();
+  }
+  public async findNew(): Promise<IPlant[]> {
+    logger.info('Finding 10 most recent plants');
+    
+    const plants = await this.repository.find({
+      order: {
+        created_at: 'DESC'
+      },
+      take: 10,
+      relations: ['species']
+    });
+    
+    logger.info(`Found ${plants.length} recent plants`);
+    return plants;
   }
 
   public async findById(id: number): Promise<IPlant | null> {
@@ -40,7 +54,7 @@ export class PlantRepository {
   public async delete(id: number): Promise<boolean> {
     logger.info(`Deleting plant with id: ${id}`);
     const result = await this.repository.delete(id);
-    return result.affected ? true : false;
+    return result.affected !== 0;
   }
 
   public async filterPlants(query: Partial<IFilterPlants>): Promise<IPlant[]> {

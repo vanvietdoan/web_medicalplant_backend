@@ -15,13 +15,13 @@ export class UserRepository {
       relations: ['role']
     });
   }
-
   public async findById(id: number): Promise<User | null> {
     return this.userRepository.findOne({
       where: { user_id: id },
       relations: ['role']
     });
   }
+
 
   public async findByEmail(email: string): Promise<User | null> {
     return this.userRepository.findOne({

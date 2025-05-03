@@ -38,6 +38,14 @@ export class AdviceCommentService {
       } : null
     }));
   }
+  public async getUsersWithMostAdvice(): Promise<any[]> {
+    logger.info('Service getUsersWithMostAdvice');
+    const users = await this.adviceCommentRepository.findUserMostAdvice();
+    return users.map(user => ({
+      user_id: user.user_id,
+      total_advice: user.total_advice,
+    }));
+  }
 
   public async getAdviceCommentById(id: number): Promise<any | null> {
     const comment = await this.adviceCommentRepository.findById(id);

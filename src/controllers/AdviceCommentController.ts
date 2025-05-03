@@ -23,6 +23,16 @@ export class AdviceCommentController {
       res.status(500).json({ message: "Error fetching advice comments", error }); return;
     }
   }
+  public async getUsersWithMostAdvice(req: Request, res: Response): Promise<void> {
+    logger.info('Getting users with most advice');  
+    try {
+      const users = await this.adviceCommentService.getUsersWithMostAdvice();
+      res.json(users);
+    } catch (error) {
+      logger.error('Error fetching users with most advice in controller:', error);
+      res.status(500).json({ message: "Error fetching users with most advice in controller", error }); return;  
+    }
+  }
 
   public async getAdviceCommentById(req: Request, res: Response): Promise<void> {
     try {
@@ -33,7 +43,7 @@ export class AdviceCommentController {
       }
       res.json(adviceComment);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching advice comment", error }); return;
+      res.status(500).json({ message: "Error fetching advice comment by id in controller", error }); return;
     }
   }
 
@@ -43,7 +53,7 @@ export class AdviceCommentController {
       const adviceComments = await this.adviceCommentService.getAdviceCommentsByUser(userId);
       res.json(adviceComments);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching user's advice comments", error }); return;
+      res.status(500).json({ message: "Error fetching user's advice comments in controller", error }); return;
     }
   }
 

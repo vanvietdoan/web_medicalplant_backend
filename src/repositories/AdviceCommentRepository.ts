@@ -3,6 +3,8 @@ import { Service } from "typedi";
 import { AppDataSource } from "../config/database";
 import { AdviceComment } from "../entities/AdviceComment";
 import { ILike } from "typeorm";
+import { User } from "../entities/User";
+import logger from "../utils/logger";
 
 @Service()
 export class AdviceCommentRepository {
@@ -16,6 +18,40 @@ export class AdviceCommentRepository {
     return this.repository.find({
       relations: ["plant", "disease",'user']
     });
+  }
+
+  public async findUserMostAdvice(): Promise<{ user_id: number, total_advice: number }[]> {
+    logger.info('Finding top 6 users with most advice comments');
+    
+    const result = await this.repository
+      .createQueryBuilder('advice_comment')
+      .select('advice_comment.user_id', 'user_id')
+      .addSelect('COUNT(advice_comment.user_id)', 'total_advice')
+      .groupBy('advice_comment.user_id')
+      .orderBy('total_advice', 'DESC')
+      .limit(4)
+      .getRawMany();
+
+    // Kiểm tra user có tồn tại không
+    const userRepository = AppDataSource.getRepository(User);
+    const validResults = await Promise.all(
+      result.map(async (item) => {
+        const user = await userRepository.findOne({
+          where: { user_id: item.user_id }
+        });
+        if (!user) return null;
+        return {
+          user_id: item.user_id,
+          total_advice: parseInt(item.total_advice)
+        };
+      })
+    );
+
+    // Lọc ra những kết quả null
+    const filteredResults = validResults.filter(item => item !== null) as { user_id: number, total_advice: number }[];
+    
+    logger.info(`Found ${filteredResults.length} users with most advice comments`);
+    return filteredResults;
   }
 
   public async findById(id: number): Promise<AdviceComment | null> {
@@ -72,6 +108,13 @@ export class AdviceCommentRepository {
     return this.repository.find({
       where: { content: ILike(`%${content}%`) },
       relations: ["plant", "disease",'user']
+    });
+  }
+
+  public async getAdviceCommentsByUser(userId: number): Promise<AdviceComment[]> {
+    return this.repository.find({
+      where: { user_id: userId },
+      relations: ["plant", "disease", "user"]
     });
   }
 } 

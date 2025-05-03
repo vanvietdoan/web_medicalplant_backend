@@ -66,6 +66,32 @@ export class PlantService {
           }))
       }));
     }
+    public async getMultipleBenefits(): Promise<any[]> {
+      console.log('Service getMultipleBenefits');
+      const plants = await this.plantRepository.finMultipleBenifit();
+      const pictures = await this.pictureRepository.findAll();
+      
+      return plants.map(plant => ({ 
+        created_at: plant.created_at,
+        updated_at: plant.updated_at,
+        plant_id: plant.plant_id,
+        name: plant.name,
+        english_name: plant.english_name,
+        description: plant.description,
+        species: plant.species ? {
+          species_id: plant.species.species_id,
+          name: plant.species.name
+        } : null,
+        instructions: plant.instructions,
+        benefits: plant.benefits,
+        images: pictures
+          .filter((picture: Picture) => picture.plant_id === plant.plant_id)
+          .map((picture: Picture) => ({
+            picture_id: picture.picture_id,
+            url: picture.url
+          }))
+      }));
+    }
   public async getPlantById(id: number): Promise<IPlant | null> {
     console.log('Service getPlantById', id);
     const plant = await this.plantRepository.findById(id);

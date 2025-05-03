@@ -34,6 +34,18 @@ export class PlantController {
     }
   }
 
+  public async getMultipleBenefits(req: Request, res: Response): Promise<void> {
+    try {
+      logger.info('Getting multiple benefits');
+      const plants = await this.plantService.getMultipleBenefits();
+      logger.info('Successfully retrieved multiple benefits');
+      res.json(plants);
+    } catch (error) {
+      logger.error('Error fetching plants:', error);
+      res.status(500).json({ message: "Error fetching plants", error });
+    }
+  }
+
   public async getPlantById(req: Request, res: Response): Promise<void> {
     try {
       const idParam = req.params.id;

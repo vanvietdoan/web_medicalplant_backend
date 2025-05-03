@@ -17,6 +17,26 @@ export class PlantRepository {
     logger.info('Finding all plants');
     return this.repository.find();
   }
+  public async finMultipleBenifit(): Promise<IPlant[]> {
+    logger.info('Finding top 10 plants with most benefits');
+    
+    const plants = await this.repository.find({
+      relations: ['species']
+    });
+
+    // Sort plants by number of commas in benefits
+    const sortedPlants = plants.sort((a, b) => {
+      const aCommas = (a.benefits.match(/,/g) || []).length;
+      const bCommas = (b.benefits.match(/,/g) || []).length;
+      return bCommas - aCommas;
+    });
+
+    // Take top 10
+    const top10Plants = sortedPlants.slice(0, 10);
+    
+    logger.info(`Found ${top10Plants.length} plants with most benefits`);
+    return top10Plants;
+  }
   public async findNew(): Promise<IPlant[]> {
     logger.info('Finding 10 most recent plants');
     

@@ -11,9 +11,15 @@ export class AdviceCommentController {
     private adviceCommentService: AdviceCommentService
   ) {}
 
+  private setHost(req: Request) {
+    const host = `${req.protocol}://${req.get('host')}`;
+    logger.info(`Setting host in AdviceCommentController: ${host}`);
+    this.adviceCommentService.setHost(host);
+  }
 
   public async getAllAdviceComments(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       logger.info('Getting all advice comments');
       const adviceComments = await this.adviceCommentService.getAllAdviceComments();
       logger.info('Successfully retrieved all advice comments');
@@ -26,6 +32,7 @@ export class AdviceCommentController {
   public async getUsersWithMostAdvice(req: Request, res: Response): Promise<void> {
     logger.info('Getting users with most advice');  
     try {
+      this.setHost(req);
       const users = await this.adviceCommentService.getUsersWithMostAdvice();
       res.json(users);
     } catch (error) {
@@ -36,6 +43,7 @@ export class AdviceCommentController {
 
   public async getAdviceCommentById(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       const adviceComment = await this.adviceCommentService.getAdviceCommentById(id);
       if (!adviceComment) {
@@ -49,6 +57,7 @@ export class AdviceCommentController {
 
   public async getAdviceCommentsByUser(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const userId = parseInt(req.params.userId);
       const adviceComments = await this.adviceCommentService.getAdviceCommentsByUser(userId);
       res.json(adviceComments);
@@ -59,6 +68,7 @@ export class AdviceCommentController {
 
   public async getAdviceCommentsByPlant(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const plantId = parseInt(req.params.plantId);
       const adviceComments = await this.adviceCommentService.getAdviceCommentsByPlant(plantId);
       console.log("adviceComments controller: ", adviceComments);
@@ -70,6 +80,7 @@ export class AdviceCommentController {
 
   public async getAdviceCommentsByDisease(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const diseaseId = parseInt(req.params.diseaseId);
       const adviceComments = await this.adviceCommentService.getAdviceCommentsByDisease(diseaseId);
       res.json(adviceComments);
@@ -80,6 +91,7 @@ export class AdviceCommentController {
 
   public async createAdviceComment(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const adviceCommentRequest: IAdviceCommentRequest = req.body;
 
       const newAdviceComment = await this.adviceCommentService.createAdviceComment(adviceCommentRequest);
@@ -92,6 +104,7 @@ export class AdviceCommentController {
 
   public async updateAdviceComment(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       const adviceComment: Partial<IAdviceComment> = req.body;
       const updatedAdviceComment = await this.adviceCommentService.updateAdviceComment(id, adviceComment);
@@ -106,6 +119,7 @@ export class AdviceCommentController {
 
   public async deleteAdviceComment(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       const result = await this.adviceCommentService.deleteAdviceComment(id);
       if (!result) {
@@ -119,6 +133,7 @@ export class AdviceCommentController {
 
   public async searchByTitle(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const title = req.query.title as string;
       const adviceComments = await this.adviceCommentService.searchByTitle(title);
       res.json(adviceComments);
@@ -129,6 +144,7 @@ export class AdviceCommentController {
 
   public async searchByContent(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const content = req.query.content as string;
       const adviceComments = await this.adviceCommentService.searchByContent(content);
       res.json(adviceComments);

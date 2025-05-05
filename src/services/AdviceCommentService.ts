@@ -8,15 +8,23 @@ import logger from "../utils/logger";
 @Service()
 export class AdviceCommentService {
   private adviceCommentRepository: AdviceCommentRepository;
+  private host: string = '';
 
   constructor() {
     this.adviceCommentRepository = new AdviceCommentRepository();
   }
 
-  public async getAllAdviceComments(): Promise<any[]> {
-    logger.info('Service getAllAdviceComments');
-    const adviceComments = await this.adviceCommentRepository.findAll();
-    return adviceComments.map(comment => ({
+  public setHost(host: string) {
+    this.host = host;
+  }
+
+  private formatUrl(path: string | undefined | null): string | null {
+    if (!path) return null;
+    return `${this.host}/${path}`;
+  }
+
+  private mapCommentResponse(comment: AdviceComment) {
+    return {
       advice_id: comment.advice_id,
       created_at: comment.created_at,
       updated_at: comment.updated_at,
@@ -34,10 +42,17 @@ export class AdviceCommentService {
         user_id: comment.user.user_id,
         full_name: comment.user.full_name,
         title: comment.user.title,
-        avatar : comment.user.avatar
+        avatar: this.formatUrl(comment.user.avatar)
       } : null
-    }));
+    };
   }
+
+  public async getAllAdviceComments(): Promise<any[]> {
+    logger.info('Service getAllAdviceComments');
+    const adviceComments = await this.adviceCommentRepository.findAll();
+    return adviceComments.map(comment => this.mapCommentResponse(comment));
+  }
+
   public async getUsersWithMostAdvice(): Promise<any[]> {
     logger.info('Service getUsersWithMostAdvice');
     const users = await this.adviceCommentRepository.findUserMostAdvice();
@@ -50,114 +65,22 @@ export class AdviceCommentService {
   public async getAdviceCommentById(id: number): Promise<any | null> {
     const comment = await this.adviceCommentRepository.findById(id);
     if (!comment) return null;
-    logger.info('Service getAdviceCommentById', comment);
-    return {
-      created_at: comment.created_at,
-      updated_at: comment.updated_at,
-      title: comment.title,
-      content: comment.content,
-      plant: comment.plant ? {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
-      } : null,
-      disease: comment.disease ? {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
-      } : null,
-      user: comment.user ? {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        title: comment.user.title,
-        avatar : comment.user.avatar
-      } : null
-    };
+    return this.mapCommentResponse(comment);
   }
 
   public async getAdviceCommentsByUser(userId: number): Promise<any[]> {
-    const adviceComments = await this.adviceCommentRepository.findByUser(userId);
-    return adviceComments.map(comment => ({
-      advice_id: comment.advice_id,
-      created_at: comment.created_at,
-      updated_at: comment.updated_at,
-      title: comment.title,
-      content: comment.content,
-      plant: comment.plant ? {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
-      } : null,
-      disease: comment.disease ? {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
-      } : null,
-      user: comment.user ? {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        
-        title: comment.user.title,
-        
-        avatar : comment.user.avatar
-      } : null
-    }));
+    const comments = await this.adviceCommentRepository.findByUser(userId);
+    return comments.map(comment => this.mapCommentResponse(comment));
   }
 
   public async getAdviceCommentsByPlant(plantId: number): Promise<any[]> {
-    let adviceComments = await this.adviceCommentRepository.findByPlant(plantId);
-    console.log("adviceComments service: ", adviceComments);
-    if (!adviceComments) {
-      return [];
-    }
-    return adviceComments.map(comment => ({
-      advice_id: comment.advice_id,
-      created_at: comment.created_at,
-      updated_at: comment.updated_at,
-      title: comment.title,
-      content: comment.content,
-      plant: comment.plant ? {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
-      } : null,
-      disease: comment.disease ? {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
-      } : null,
-      user: comment.user ? {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        
-        title: comment.user.title,
-        
-        avatar : comment.user.avatar
-      } : null
-    }));
+    const comments = await this.adviceCommentRepository.findByPlant(plantId);
+    return comments.map(comment => this.mapCommentResponse(comment));
   }
 
   public async getAdviceCommentsByDisease(diseaseId: number): Promise<any[]> {
-    const adviceComments = await this.adviceCommentRepository.findByDisease(diseaseId);
-    if (!adviceComments) {
-      return [];
-    }
-    return adviceComments.map(comment => ({
-      advice_id: comment.advice_id,
-      created_at: comment.created_at,
-      updated_at: comment.updated_at,
-      title: comment.title,
-      content: comment.content,
-      plant: comment.plant ? {
-        plant_id: comment.plant.plant_id,
-        name: comment.plant.name
-      } : null,
-      disease: comment.disease ? {
-        disease_id: comment.disease.disease_id,
-        name: comment.disease.name
-      } : null,
-      user: comment.user ? {
-        user_id: comment.user.user_id,
-        full_name: comment.user.full_name,
-        title: comment.user.title,
-        
-        avatar : comment.user.avatar
-      } : null
-    }));
+    const comments = await this.adviceCommentRepository.findByDisease(diseaseId);
+    return comments.map(comment => this.mapCommentResponse(comment));
   }
 
   public async createAdviceComment(adviceComment: IAdviceCommentRequest): Promise<any> {
@@ -168,49 +91,13 @@ export class AdviceCommentService {
       throw new Error("Failed to create advice comment");
     }
 
-    return {
-      created_at: createdComment.created_at,
-      updated_at: createdComment.updated_at,
-      title: createdComment.title,
-      content: createdComment.content,
-      plant: createdComment.plant ? {
-        plant_id: createdComment.plant.plant_id,
-        name: createdComment.plant.name
-      } : null,
-      disease: createdComment.disease ? {
-        disease_id: createdComment.disease.disease_id,
-        name: createdComment.disease.name
-      } : null,
-      user: createdComment.user ? {
-        user_id: createdComment.user.user_id,
-        full_name: createdComment.user.full_name
-      } : null
-    };
+    return this.mapCommentResponse(createdComment);
   }
 
   public async updateAdviceComment(id: number, adviceComment: Partial<IAdviceComment>): Promise<any | null> {
     const updatedComment = await this.adviceCommentRepository.update(id, adviceComment);
     if (!updatedComment) return null;
-    
-    return {
-      advice_id: updatedComment.advice_id,
-      created_at: updatedComment.created_at,
-      updated_at: updatedComment.updated_at,
-      title: updatedComment.title,
-      content: updatedComment.content,
-      plant: updatedComment.plant ? {
-        plant_id: updatedComment.plant.plant_id,
-        name: updatedComment.plant.name
-      } : null,
-      disease: updatedComment.disease ? {
-        disease_id: updatedComment.disease.disease_id,
-        name: updatedComment.disease.name
-      } : null,
-      user: updatedComment.user ? {
-        user_id: updatedComment.user.user_id,
-        full_name: updatedComment.user.full_name
-      } : null
-    };
+    return this.mapCommentResponse(updatedComment);
   }
 
   public async deleteAdviceComment(id: number): Promise<boolean> {

@@ -82,11 +82,11 @@ export class UploadController {
           res.status(400).json({ message: 'No file uploaded' }); return;
         }
         
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
-        const fileUrl = `${baseUrl}/${req.file.path.replace(/\\/g, '/')}`;
+        const relativePath = `${req.file.path.replace(/\\/g, '/')}`;
         
         const response: IFileUploadResponse = {
-          url: fileUrl,
+          url: relativePath,
+          path: relativePath,
           filename: req.file.filename,
           mimetype: req.file.mimetype,
           size: req.file.size
@@ -111,12 +111,12 @@ export class UploadController {
           res.status(400).json({ message: 'No files uploaded' }); return;
         }
         
-        const baseUrl = `${req.protocol}://${req.get('host')}`;
         const response = (req.files as Express.Multer.File[]).map(file => {
-          const fileUrl = `${baseUrl}/${file.path.replace(/\\/g, '/')}`;
+          const relativePath = `${file.path.replace(/\\/g, '/')}`;
           
           return {
-            url: fileUrl,
+            url: relativePath,
+            path: relativePath,
             filename: file.filename,
             mimetype: file.mimetype,
             size: file.size

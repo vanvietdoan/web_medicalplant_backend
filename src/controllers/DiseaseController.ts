@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { Service } from "typedi";
 import { DiseaseService } from "../services/DiseaseService";
 import { IDisease } from "../interfaces/IDisease";
+import logger from "../utils/logger";
 
 @Service()
 export class DiseaseController {
@@ -9,9 +10,16 @@ export class DiseaseController {
     private diseaseService: DiseaseService
   ) {}
 
+  private setHost(req: Request) {
+    const host = `${req.protocol}://${req.get('host')}`;
+    logger.info(`Setting host in DiseaseController: ${host}`);
+    this.diseaseService.setHost(host);
+  }
+
   public async getAllDiseases(req: Request, res: Response): Promise<void> {
     try {
-      console.log('Controller getAllDiseases');
+      logger.info('Controller getAllDiseases');
+      this.setHost(req);
       const diseases = await this.diseaseService.getAllDiseases();
       res.json(diseases);
     } catch (error) {
@@ -21,6 +29,7 @@ export class DiseaseController {
 
   public async getDiseaseById(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       const disease = await this.diseaseService.getDiseaseById(id);
       if (!disease) {
@@ -35,6 +44,7 @@ export class DiseaseController {
 
   public async createDisease(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const disease: Partial<IDisease> = req.body;
       const newDisease = await this.diseaseService.createDisease(disease);
       res.status(201).json(newDisease);
@@ -45,6 +55,7 @@ export class DiseaseController {
 
   public async updateDisease(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       const disease: Partial<IDisease> = req.body;
       const updatedDisease = await this.diseaseService.updateDisease(id, disease);
@@ -60,6 +71,7 @@ export class DiseaseController {
 
   public async deleteDisease(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       const result = await this.diseaseService.deleteDisease(id);
       if (!result) {
@@ -74,6 +86,7 @@ export class DiseaseController {
 
   public async searchByName(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const name = req.query.name as string;
       const diseases = await this.diseaseService.searchByName(name);
       res.json(diseases);
@@ -84,6 +97,7 @@ export class DiseaseController {
 
   public async searchBySymptoms(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const symptoms = req.query.symptoms as string;
       const diseases = await this.diseaseService.searchBySymptoms(symptoms);
       res.json(diseases);

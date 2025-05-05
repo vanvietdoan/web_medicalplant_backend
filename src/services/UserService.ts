@@ -4,12 +4,50 @@ import { UserRepository } from '../repositories/UserRepository';
 import { IUser, IUserDTO, IUserResponse } from "../interfaces/IUser";
 import bcrypt from "bcryptjs";
 import { Role } from '../entities/Role';
+import logger from "../utils/logger";
 
 @Service()
 export class UserService {
   constructor(
     private userRepository: UserRepository
   ) {}
+
+  private host: string = '';
+
+  public setHost(host: string) {
+    logger.info(`Setting host in UserService: ${host}`);
+    this.host = host;
+  }
+
+  private formatUrl(path: string | undefined | null): string | null {
+    if (!path) return null;
+    if (!this.host) {
+      logger.warn('Host is not set in UserService');
+      return path;
+    }
+    // Remove leading slash if exists to avoid double slash
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    const formattedUrl = `${this.host}/${cleanPath}`;
+    logger.debug(`Formatted URL: ${formattedUrl}`);
+    return formattedUrl;
+  }
+
+  private mapUserResponse(user: User): IUserResponse {
+    return {
+      user_id: user.user_id,
+      email: user.email,
+      full_name: user.full_name,
+      title: user.title,
+      proof: this.formatUrl(user.proof) || '',
+      specialty: user.specialty,
+      active: user.active,
+      avatar: this.formatUrl(user.avatar) || undefined,
+      role_id: user.role_id,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+  }
 
   public async findAll(): Promise<User[]> {
     return this.userRepository.findAll();
@@ -32,44 +70,26 @@ export class UserService {
   }
 
   public async getAllUsers(): Promise<IUserResponse[]> {
+    if (!this.host) {
+      logger.warn('Host is not set when calling getAllUsers');
+    }
     const users = await this.userRepository.findAll();
-    return users.map(user => ({
-      user_id: user.user_id,
-      email: user.email,
-      full_name: user.full_name,
-      title: user.title,
-      proof: user.proof,
-      specialty: user.specialty,
-      active: user.active,
-      avatar: user.avatar,
-      role_id: user.role_id,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    }));
+    return users.map(user => this.mapUserResponse(user));
   }
 
   public async getUserById(id: number): Promise<IUserResponse | null> {
+    if (!this.host) {
+      logger.warn('Host is not set when calling getUserById');
+    }
     const user = await this.userRepository.findById(id);
     if (!user) return null;
-    
-    return {
-      user_id: user.user_id,
-      email: user.email,
-      full_name: user.full_name,
-      title: user.title,
-      proof: user.proof,
-      specialty: user.specialty,
-      active: user.active,
-      avatar: user.avatar,
-      role_id: user.role_id,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    };
+    return this.mapUserResponse(user);
   }
 
   public async createUser(userData: Partial<IUserDTO>): Promise<IUserResponse> {
+    if (!this.host) {
+      logger.warn('Host is not set when calling createUser');
+    }
     // Check if user with this email already exists
     if (userData.email) {
       const existingUser = await this.userRepository.findByEmail(userData.email);
@@ -84,23 +104,13 @@ export class UserService {
     }
 
     const user = await this.userRepository.create(userData);
-    return {
-      user_id: user.user_id,
-      email: user.email,
-      full_name: user.full_name,
-      title: user.title,
-      proof: user.proof,
-      specialty: user.specialty,
-      active: user.active,
-      avatar: user.avatar,
-      role_id: user.role_id,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    };
+    return this.mapUserResponse(user);
   }
 
   public async updateUser(id: number, userData: Partial<IUserDTO>): Promise<IUserResponse | null> {
+    if (!this.host) {
+      logger.warn('Host is not set when calling updateUser');
+    }
     // Hash password if it's being updated
     if (userData.password) {
       userData.password = await bcrypt.hash(userData.password, 10);
@@ -109,20 +119,7 @@ export class UserService {
     const user = await this.userRepository.update(id, userData);
     if (!user) return null;
 
-    return {
-      user_id: user.user_id,
-      email: user.email,
-      full_name: user.full_name,
-      title: user.title,
-      proof: user.proof,
-      specialty: user.specialty,
-      active: user.active,
-      avatar: user.avatar,
-      role_id: user.role_id,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    };
+    return this.mapUserResponse(user);
   }
 
   public async deleteUser(id: number): Promise<boolean> {
@@ -130,22 +127,12 @@ export class UserService {
   }
 
   public async getUserByEmail(email: string): Promise<IUserResponse | null> {
+    if (!this.host) {
+      logger.warn('Host is not set when calling getUserByEmail');
+    }
     const user = await this.userRepository.findByEmail(email);
     if (!user) return null;
 
-    return {
-      user_id: user.user_id,
-      email: user.email,
-      full_name: user.full_name,
-      title: user.title,
-      proof: user.proof,
-      specialty: user.specialty,
-      active: user.active,
-      avatar: user.avatar,
-      role_id: user.role_id,
-      role: user.role,
-      created_at: user.created_at,
-      updated_at: user.updated_at,
-    };
+    return this.mapUserResponse(user);
   }
 }

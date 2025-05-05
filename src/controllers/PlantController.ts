@@ -10,8 +10,15 @@ export class PlantController {
     private plantService: PlantService
   ) {}
 
+  private setHost(req: Request) {
+    const host = `${req.protocol}://${req.get('host')}`;
+    logger.info(`Setting host in PlantController: ${host}`);
+    this.plantService.setHost(host);
+  }
+
   public async getAllPlants(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       logger.info('Getting all plants');
       const plants = await this.plantService.getAllPlants();
       logger.info('Successfully retrieved all plants');
@@ -24,6 +31,7 @@ export class PlantController {
   
   public async getNewPlants(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       logger.info('Getting new plants');
       const plants = await this.plantService.getNewPlants();
       logger.info('Successfully retrieved new plants');
@@ -36,6 +44,7 @@ export class PlantController {
 
   public async getMultipleBenefits(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       logger.info('Getting multiple benefits');
       const plants = await this.plantService.getMultipleBenefits();
       logger.info('Successfully retrieved multiple benefits');
@@ -48,6 +57,7 @@ export class PlantController {
 
   public async getPlantById(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const idParam = req.params.id;
       const id = parseInt(idParam);
       
@@ -77,6 +87,7 @@ export class PlantController {
 
   public async createPlant(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       logger.info('Creating new plant:', req.body);
       const plant: Partial<IPlant> = req.body;
       
@@ -98,6 +109,7 @@ export class PlantController {
 
   public async updatePlant(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const idParam = req.params.id;
       const id = parseInt(idParam);
       
@@ -125,7 +137,7 @@ export class PlantController {
         res.status(404).json({ message: "Plant not found" });
         return;
       }
-      
+        
       logger.info(`Successfully updated plant with id ${id}:`, updatedPlant);
       res.json(updatedPlant);
     } catch (error) {
@@ -136,6 +148,7 @@ export class PlantController {
 
   public async deletePlant(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
         res.status(400).json({ message: "Invalid plant ID to delete. Please provide a numeric ID." });
@@ -161,6 +174,7 @@ export class PlantController {
 
   public async filterPlants(req: Request, res: Response): Promise<void> {
     try {
+      this.setHost(req);
       const { name, divisionId, classId, orderId, speciesId, genusId, familyId } = req.query;
       
       logger.info('Filtering plants with query parameters:', req.query);

@@ -9,89 +9,68 @@ import logger  from "../utils/logger";
 export class PlantService {
   private plantRepository: PlantRepository;
   private pictureRepository: PictureRepository;
+  private host: string = '';
+
   constructor() {
     this.plantRepository = new PlantRepository();
     this.pictureRepository = new PictureRepository();
-    }
+  }
 
-    public async getAllPlants(): Promise<any[]> {
-      console.log('Service getAllPlants');
-      const plants = await this.plantRepository.findAll();
-      const pictures = await this.pictureRepository.findAll();
-      
-      return plants.map(plant => ({
-        created_at: plant.created_at,
-        updated_at: plant.updated_at,
-        plant_id: plant.plant_id,
-        name: plant.name,
-        english_name: plant.english_name,
-        description: plant.description,
-        species: plant.species ? {
-          species_id: plant.species.species_id,
-          name: plant.species.name
-        } : null,
-        instructions: plant.instructions,
-        benefits: plant.benefits,
-        images: pictures
-          .filter((picture: Picture) => picture.plant_id === plant.plant_id)
-          .map((picture: Picture) => ({
-            picture_id: picture.picture_id,
-            url: picture.url
-          }))
-      }));
-    }
-    public async getNewPlants(): Promise<any[]> {
-      console.log('Service getNewPlants');
-      const plants = await this.plantRepository.findNew();
-      const pictures = await this.pictureRepository.findAll();
-      
-      return plants.map(plant => ({
-        created_at: plant.created_at,
-        updated_at: plant.updated_at,
-        plant_id: plant.plant_id,
-        name: plant.name,
-        english_name: plant.english_name,
-        description: plant.description,
-        species: plant.species ? {
-          species_id: plant.species.species_id,
-          name: plant.species.name
-        } : null,
-        instructions: plant.instructions,
-        benefits: plant.benefits,
-        images: pictures
-          .filter((picture: Picture) => picture.plant_id === plant.plant_id)
-          .map((picture: Picture) => ({
-            picture_id: picture.picture_id,
-            url: picture.url
-          }))
-      }));
-    }
-    public async getMultipleBenefits(): Promise<any[]> {
-      console.log('Service getMultipleBenefits');
-      const plants = await this.plantRepository.finMultipleBenifit();
-      const pictures = await this.pictureRepository.findAll();
-      
-      return plants.map(plant => ({ 
-        created_at: plant.created_at,
-        updated_at: plant.updated_at,
-        plant_id: plant.plant_id,
-        name: plant.name,
-        english_name: plant.english_name,
-        description: plant.description,
-        species: plant.species ? {
-          species_id: plant.species.species_id,
-          name: plant.species.name
-        } : null,
-        instructions: plant.instructions,
-        benefits: plant.benefits,
-        images: pictures
-          .filter((picture: Picture) => picture.plant_id === plant.plant_id)
-          .map((picture: Picture) => ({
-            picture_id: picture.picture_id,
-            url: picture.url
-          }))
-      }));
-    }
+  public setHost(host: string) {
+    this.host = host;
+  }
+
+  private formatUrl(path: string | undefined | null): string | null {
+    if (!path) return null;
+    return `${this.host}/${path}`;
+  }
+
+  private mapPlantResponse(plant: any, pictures: Picture[]) {
+    const mappedPlant = {
+      created_at: plant.created_at,
+      updated_at: plant.updated_at,
+      plant_id: plant.plant_id,
+      name: plant.name,
+      english_name: plant.english_name,
+      description: plant.description,
+      species_id: plant.species_id,
+      species: plant.species,
+      instructions: plant.instructions,
+      benefits: plant.benefits,
+      images: pictures
+        .filter((picture: Picture) => picture.plant_id === plant.plant_id)
+        .map((picture: Picture) => ({
+          picture_id: picture.picture_id,
+          url: this.formatUrl(picture.url)
+        }))
+    };
+    return mappedPlant as IPlant;
+  }
+
+  public async getAllPlants(): Promise<IPlant[]> {
+    console.log('Service getAllPlants');
+    const plants = await this.plantRepository.findAll();
+    const pictures = await this.pictureRepository.findAll();
+    
+    return plants.map(plant => this.mapPlantResponse(plant, pictures));
+  }
+
+  public async getNewPlants(): Promise<IPlant[]> {
+    console.log('Service getNewPlants');
+    const plants = await this.plantRepository.findNew();
+    const pictures = await this.pictureRepository.findAll();
+    
+    return plants.map(plant => this.mapPlantResponse(plant, pictures));
+  }
+
+  public async getMultipleBenefits(): Promise<IPlant[]> {
+    console.log('Service getMultipleBenefits');
+    const plants = await this.plantRepository.finMultipleBenifit();
+    const pictures = await this.pictureRepository.findAll();
+    
+    return plants.map(plant => this.mapPlantResponse(plant, pictures));
+  }
+
   public async getPlantById(id: number): Promise<IPlant | null> {
     console.log('Service getPlantById', id);
     const plant = await this.plantRepository.findById(id);
@@ -99,15 +78,7 @@ export class PlantService {
     if (!plant) {
       return null;
     }
-    return {
-      ...plant,
-      images: pictures
-        .filter((picture: Picture) => picture.plant_id === id)
-        .map((picture: Picture) => ({
-          picture_id: picture.picture_id,
-          url: picture.url
-        }))
-    };
+    return this.mapPlantResponse(plant, pictures);
   }
 
   public async createPlant(plantData: Partial<IPlant> & { images?: Array<{ url: string }> }): Promise<IPlant> {
@@ -153,23 +124,13 @@ export class PlantService {
     return result;
   }
 
-  public async filterPlants( filter: IFilterPlants): Promise<IPlant[]> {
+  public async filterPlants(filter: IFilterPlants): Promise<IPlant[]> {
     logger.info('Filtering plants:', filter);
     const plants = await this.plantRepository.filterPlants(filter);
     const pictures = await this.pictureRepository.findAll();
     if (!plants) {
       return [];
     }
-    return plants.map(plant => ({
-      ...plant,
-      images: pictures
-        .filter((picture: Picture) => picture.plant_id === plant.plant_id)
-        .map((picture: Picture) => ({
-          picture_id: picture.picture_id,
-          url: picture.url
-        }))
-    }));
-
+    return plants.map(plant => this.mapPlantResponse(plant, pictures));
   }
-
 }

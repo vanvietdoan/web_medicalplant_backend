@@ -8,3 +8,11 @@ export interface IUserReport {
   user: User;
   report: Report;
 }
+
+export interface IUserReportResponse {
+  user_report_id: number;
+  user_id: number;
+  report_id: number;
+  created_at: Date;
+  updated_at: Date;
+}

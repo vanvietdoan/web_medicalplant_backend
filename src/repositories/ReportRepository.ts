@@ -13,14 +13,14 @@ export class ReportRepository {
 
   public async findAll(): Promise<Report[]> {
     return this.repository.find({
-      relations: ["plant", "user", "user_reports"]
+      relations: ["plant"]
     });
   }
 
   public async findById(id: number): Promise<Report | null> {
     return this.repository.findOne({
       where: { report_id: id },
-      relations: ["plant", "user", "user_reports"]
+      relations: ["plant"]
     });
   }
 
@@ -39,17 +39,17 @@ export class ReportRepository {
     return result.affected ? true : false;
   }
 
-  public async findByUser(userId: number): Promise<Report[]> {
+  public async findByUser(): Promise<Report[]> {
     return this.repository.find({
-      where: { user: { user_id: userId } },
-      relations: ["plant", "user", "user_reports"]
+      where: { },
+      relations: ["plant"]
     });
   }
 
   public async findByPlant(plantId: number): Promise<Report[]> {
     return this.repository.find({
-      where: { plant: { plant_id: plantId } },
-      relations: ["plant", "user", "user_reports"]
+      where: { plant_id: plantId },
+      relations: ["plant"]
     });
   }
 } 

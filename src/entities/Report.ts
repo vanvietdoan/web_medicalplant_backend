@@ -1,32 +1,51 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { IReport } from "../interfaces/IReport";
-import { User } from "./User";
-import { Plant } from "./Plant";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
+import { Plant } from "./Plant";
+import { User } from "./User";
 
 @Entity({ name: "reports" })
-export class Report extends BaseEntity implements IReport {
+export class Report extends BaseEntity {
   @PrimaryGeneratedColumn()
   report_id!: number;
 
   @Column()
-  title!: string;
+  summary!: string;
 
   @Column()
-  content!: string;
-
-  @Column({ default: "pending" })
-  status!: string;
+  propose!: string;
 
   @Column()
-  user_id!: number;
+  proof!: string;
+
+  @Column()
+  status!: number;
 
   @Column()
   plant_id!: number;
 
-  @ManyToOne(() => User, user => user.user_id)
-  user!: User;
-
-  @ManyToOne(() => Plant, plant => plant.plant_id)
+  @ManyToOne(() => Plant)
+  @JoinColumn({ name: "plant_id" })
   plant!: Plant;
+
+  @Column()
+  plant_name!: string;
+
+  @Column()
+  plant_english_name!: string;
+
+  @Column()
+  plant_description!: string;
+
+  @Column()
+  plant_instructions!: string;
+
+  @Column()
+  plant_benefits!: string;
+
+  @Column()
+  plant_species_id!: number;
+
+  @Column()
+  user_id!: number;
+
 }

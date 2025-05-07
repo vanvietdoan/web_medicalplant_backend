@@ -79,15 +79,7 @@ export class ReportController {
     }
   }
 
-  async getReportsByUser(req: Request, res: Response): Promise<void> {
-    try {
-      const userId = parseInt(req.params.userId);
-      const reports = await this.reportService.getReportsByUser(userId);
-      res.json(reports);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching reports by user" }); return;
-    }
-  }
+ 
 
   async getReportsByPlant(req: Request, res: Response): Promise<void> {
     try {

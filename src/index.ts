@@ -6,6 +6,7 @@ import userRoutes from "./routes/userRoutes";
 import plantRoutes from "./routes/plantRoutes";
 import diseaseRoutes from "./routes/diseaseRoutes";
 import reportRoutes from "./routes/reportRoutes";
+import userReportRoutes from "./routes/userReportRoutes";
 import authRoutes from "./routes/authRoutes";
 import uploadRoutes from './routes/uploadRoutes';
 import divisionRoutes from './routes/divisionRoutes';
@@ -46,8 +47,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/plants", plantRoutes);
 app.use("/api/diseases", diseaseRoutes);
-app.use("/api/reports", reportRoutes);
+app.use("/api/report", reportRoutes);
+app.use("/api/user_report", userReportRoutes);
 app.use('/api/upload', uploadRoutes);
+
 app.use("/api/advice", adviceRoutes);
 
 

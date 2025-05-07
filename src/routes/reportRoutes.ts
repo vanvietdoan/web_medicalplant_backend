@@ -7,14 +7,12 @@ const router = Router();
 const reportController = Container.get(ReportController);
 
 // Public routes
-router.get("/", reportController.getAllReports);
-router.get("/:id", reportController.getReportById);
-router.get("/user/:userId", reportController.getReportsByUser.bind(reportController));
-router.get("/plant/:plantId", reportController.getReportsByPlant.bind(reportController));
+router.get("/", reportController.getAllReports.bind(reportController));
+router.get("/:id", reportController.getReportById.bind(reportController));
 
 // Protected routes
-router.post("/", auth, reportController.createReport);
-router.put("/:id", auth, reportController.updateReport);
-router.delete("/:id", auth, reportController.deleteReport);
+router.post("/", auth, reportController.createReport.bind(reportController));
+router.put("/:id", auth, reportController.updateReport.bind(reportController));
+router.delete("/:id", auth, reportController.deleteReport.bind(reportController));
 
 export default router; 

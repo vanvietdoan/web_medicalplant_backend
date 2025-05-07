@@ -4,6 +4,7 @@ import { PlantDisease } from "./PlantDisease";
 import { Picture } from "./Picture";
 import { BaseEntity } from "./BaseEntity";
 import { Species } from "./Species";
+import { User } from "./User";
 
 @Entity({ name: "plants" })
 export class Plant extends BaseEntity implements IPlant {

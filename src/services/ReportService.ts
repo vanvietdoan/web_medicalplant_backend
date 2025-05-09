@@ -21,10 +21,10 @@ export class ReportService {
     return this.mapReportResponse(report);
   }
 
-  public async getReportsByUser(): Promise<Report[]> {
-    return this.reportRepository.findByUser();
-
+  public async getReportsByUser(userId: number): Promise<Report[]> {
+    return this.reportRepository.findByUser(userId);
   }
+
 
   public async getReportsByPlant(plantId: number): Promise<Report[]> {
     return this.reportRepository.findByPlant(plantId);

@@ -10,6 +10,8 @@ const reportController = Container.get(ReportController);
 router.get("/", reportController.getAllReports.bind(reportController));
 router.get("/:id", reportController.getReportById.bind(reportController));
 
+router.get("/plant/:plantId", reportController.getReportsByPlant.bind(reportController));
+router.get("/user/:userId", reportController.getReportsByUserId.bind(reportController));
 // Protected routes
 router.post("/", auth, reportController.createReport.bind(reportController));
 router.put("/:id", auth, reportController.updateReport.bind(reportController));

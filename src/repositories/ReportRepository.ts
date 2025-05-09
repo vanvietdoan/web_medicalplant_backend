@@ -39,9 +39,9 @@ export class ReportRepository {
     return result.affected ? true : false;
   }
 
-  public async findByUser(): Promise<Report[]> {
+  public async findByUser(userId: number): Promise<Report[]> {
     return this.repository.find({
-      where: { },
+      where: { user_id: userId },
       relations: ["plant"]
     });
   }

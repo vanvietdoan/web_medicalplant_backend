@@ -30,6 +30,7 @@ import classRoutes from './routes/classRoutes';
 import orderRoutes from './routes/orderRoutes';
 import  genusRoutes from './routes/genusRoutes';
 import speciesRoutes from './routes/speciesRoutes';
+import evalueRoutes from './routes/evalueRoutes';
 
 // Set up TypeDI as the container for TypeORM
 useContainer(Container);
@@ -50,9 +51,9 @@ app.use("/api/diseases", diseaseRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/user_report", userReportRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/evalue', evalueRoutes);
 
 app.use("/api/advice", adviceRoutes);
-
 
 app.use("/api/divisions", divisionRoutes);
 app.use("/api/classes", classRoutes);

@@ -3,7 +3,7 @@ import { IEvalue } from "../interfaces/IEvalue";
 import logger from "../utils/logger";
 import { Evalue } from '../entities/Evalue';
 import { EvalueRepository } from '../repositories/EvalueRepository';
-import { IEvalueResponse } from '../interfaces/IEvalue';
+import { IAdviceComment } from '../interfaces/IAdviceComment';
 
 @Service()
 export class EvalueService {
@@ -18,40 +18,46 @@ export class EvalueService {
     this.host = host;
   }
 
-  private mapEvalueResponse(evalue: Evalue): IEvalueResponse {
+  private mapEvalueResponse(evalue: Evalue): IEvalue {
     return {
       id: evalue.id,
       rating: evalue.rating,
       content: evalue.content,
-      user_id: evalue.user_id,
       advice_id: evalue.advice_id,
+      user_id: evalue.user_id,
       created_at: evalue.created_at,
       updated_at: evalue.updated_at,
-      user: {
+      user: evalue.user ? {
+        user_id: evalue.user_id,
         created_at: evalue.user.created_at,
         full_name: evalue.user.full_name,
         proof: evalue.user.proof
+      } : {
+        user_id: evalue.user_id,
+        created_at: null,
+        full_name: null,
+        proof: null
       }
     };
   }
 
-  public async findAll(): Promise<IEvalueResponse[]> {
+  public async findAll(): Promise<IEvalue[]> {
     const evalues = await this.evalueRepository.findAll();
     return evalues.map(evalue => this.mapEvalueResponse(evalue));
   }
 
-  public async findById(id: number): Promise<IEvalueResponse | null> {
+  public async findById(id: number): Promise<IEvalue | null> {
     const evalue = await this.evalueRepository.findById(id);
     if (!evalue) return null;
     return this.mapEvalueResponse(evalue);
   }
 
-  public async create(evalueData: Partial<IEvalue>): Promise<IEvalueResponse> {
+  public async create(evalueData: Partial<IEvalue>): Promise<IEvalue> {
     const evalue = await this.evalueRepository.create(evalueData);
     return this.mapEvalueResponse(evalue);
   }
 
-  public async update(id: number, evalueData: Partial<IEvalue>): Promise<IEvalueResponse | null> {
+  public async updateEvalue(id: number, evalueData: Partial<IEvalue>): Promise<IEvalue | null> {
     const updatedEvalue = await this.evalueRepository.update(id, evalueData);
     if (!updatedEvalue) return null;
     return this.mapEvalueResponse(updatedEvalue);
@@ -61,7 +67,7 @@ export class EvalueService {
     return this.evalueRepository.delete(id);
   }
 
-  public async getbyUserId(userId: number): Promise<IEvalueResponse[]> {
+  public async getbyUserId(userId: number): Promise<IEvalue[]> {
     if (!this.host) {
       logger.warn('Host is not set when calling getbyUserId');
     }
@@ -69,7 +75,7 @@ export class EvalueService {
     return evalues.map(evalue => this.mapEvalueResponse(evalue));
   }
 
-  public async getbyAdviceId(adviceId: number): Promise<IEvalueResponse[]> {
+  public async getbyAdviceId(adviceId: number): Promise<IEvalue[]> {
     if (!this.host) {
       logger.warn('Host is not set when calling getbyAdviceId');
     }

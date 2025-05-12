@@ -90,7 +90,7 @@ export class EvalueController {
     try {
       this.setHost(req);
       const id = Number(req.params.id);
-      const evalue = await this.evalueService.update(id, req.body);
+      const evalue = await this.evalueService.updateEvalue(id, req.body);
       
       if (!evalue) {
         res.status(404).json({ message: "Evalue not found" });

@@ -26,29 +26,26 @@ export class EvalueRepository    {
   public async findByUserId(userId: number): Promise<Evalue[]> {
     return this.evalueRepository.find({
       where: { user_id: userId },
-      relations: ['user', 'advice']
+      relations: [ 'user']
     });
   }
 
   public async findByAdviceId(adviceId: number): Promise<Evalue[]> {
     return this.evalueRepository.find({
       where: { advice_id: adviceId },
-      relations: ['user', 'advice']
+      relations: ['advice']
     });
   }
 
 
   public async create(evalueData: Partial<IEvalue>): Promise<Evalue> {
-    const evalue = this.evalueRepository.create(evalueData);
+    const evalue = this.evalueRepository.create(evalueData as Evalue);
     return this.evalueRepository.save(evalue);
   }
 
   public async update(id: number, evalueData: Partial<IEvalue>): Promise<Evalue | null> {
-    const evalue = await this.findById(id);
-    if (!evalue) return null;
-
-    this.evalueRepository.merge(evalue, evalueData);
-    return this.evalueRepository.save(evalue);
+    await this.evalueRepository.update(id, evalueData as Evalue);
+    return this.findById(id);
   }
 
   public async delete(id: number): Promise<boolean> {
@@ -56,7 +53,4 @@ export class EvalueRepository    {
     return result.affected !== 0;
   }
 
- 
-
-  
 } 

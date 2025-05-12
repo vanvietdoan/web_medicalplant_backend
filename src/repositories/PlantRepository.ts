@@ -37,18 +37,20 @@ export class PlantRepository {
     logger.info(`Found ${top10Plants.length} plants with most benefits`);
     return top10Plants;
   }
+  
+
   public async findNew(): Promise<IPlant[]> {
-    logger.info('Finding 10 most recent plants');
+    logger.info('Finding 10 most recently updated plants');
     
     const plants = await this.repository.find({
       order: {
-        created_at: 'DESC'
+        updated_at: 'DESC'
       },
       take: 10,
       relations: ['species']
     });
     
-    logger.info(`Found ${plants.length} recent plants`);
+    logger.info(`Found ${plants.length} recently updated plants`);
     return plants;
   }
 

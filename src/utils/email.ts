@@ -44,13 +44,13 @@ export async function sendVerificationEmail(email: string, token: string): Promi
 export async function sendNewPasswordEmail(email: string, newPassword: string): Promise<void> {
   const mailOptions = {
     to: email,
-    subject: "Your New Password",
+    subject: "[Quản lý cây thuốc] - Mật khẩu mới",
     html: `
-      <h1>Your New Password</h1>
-      <p>Here is your new password:</p>
+      <h1>Mật khẩu mới của bạn</h1>
+      <p>Mật khẩu mới của bạn là:</p>
       <p style="font-size: 16px; font-weight: bold; padding: 10px; background-color: #f5f5f5; border-radius: 5px;">${newPassword}</p>
-      <p>Please change this password after logging in for security purposes.</p>
-      <p>If you didn't request a new password, please contact our support team immediately.</p>
+      <p>Vui lòng đổi mật khẩu sau khi đăng nhập để đảm bảo an toàn.</p>
+      <p>Nếu bạn không yêu cầu mật khẩu mới, vui lòng liên hệ với nhóm hỗ trợ của chúng tôi ngay lập tức.</p>
     `,
   };
 

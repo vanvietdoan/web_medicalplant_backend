@@ -9,8 +9,8 @@ const notifyController = Container.get(NotifyController);
 router.get("/:userId", notifyController.getNotifyByUserId.bind(notifyController));
 
 // Protected routes
-router.post("/", notifyController.createNotify.bind(notifyController));
-router.put("/update/:id", notifyController.updateNotify.bind(notifyController));
+router.post("/", auth, notifyController.createNotify.bind(notifyController));
+router.put("/update/:id", auth, notifyController.updateNotify.bind(notifyController));
 router.delete("/:id", auth, notifyController.deleteNotify.bind(notifyController));
 
 export default router; 

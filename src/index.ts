@@ -31,6 +31,7 @@ import orderRoutes from './routes/orderRoutes';
 import  genusRoutes from './routes/genusRoutes';
 import speciesRoutes from './routes/speciesRoutes';
 import evalueRoutes from './routes/evalueRoutes';
+import notifyRoutes from './routes/notifyRoutes';
 
 // Set up TypeDI as the container for TypeORM
 useContainer(Container);
@@ -61,6 +62,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/family",familyRoutes);
 app.use("/api/genus",genusRoutes)
 app.use("/api/species",speciesRoutes)
+app.use("/api/notify", notifyRoutes)
 // Initialize database connection
 AppDataSource.initialize()
   .then(() => {

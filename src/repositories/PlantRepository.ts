@@ -163,4 +163,11 @@ export class PlantRepository {
     
     return queryBuilder.getMany();
   }
+
+  public async findByEnglishName(englishName: string): Promise<IPlant | null> {
+    logger.info(`Finding plant with English name: ${englishName}`);
+    return this.repository.findOne({
+      where: { english_name: englishName }
+    });
+  }
 }

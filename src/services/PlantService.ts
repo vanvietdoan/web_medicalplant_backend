@@ -83,6 +83,15 @@ export class PlantService {
 
   public async createPlant(plantData: Partial<IPlant> & { images?: Array<{ url: string }> }): Promise<IPlant> {
     const { images, ...plantInfo } = plantData;
+    
+    // Check for duplicate English name
+    if (plantInfo.english_name) {
+      const existingPlant = await this.plantRepository.findByEnglishName(plantInfo.english_name);
+      if (existingPlant) {
+        throw new Error(`A plant with English name "${plantInfo.english_name}" already exists`);
+      }
+    }
+
     const createdPlant = await this.plantRepository.create(plantInfo);
     if (images && images.length > 0) {
       await Promise.all(images.map(image => 

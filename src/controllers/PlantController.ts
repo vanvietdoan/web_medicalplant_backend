@@ -103,7 +103,11 @@ export class PlantController {
       res.status(201).json(newPlant);
     } catch (error) {
       logger.error('Error creating plant:', error);
-      res.status(500).json({ message: "Error creating plant", error });
+      if (error instanceof Error && error.message.includes('already exists')) {
+        res.status(409).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Error creating plant", error });
+      }
     }
   }
 

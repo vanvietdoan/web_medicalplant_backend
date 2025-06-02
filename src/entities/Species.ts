@@ -13,6 +13,10 @@ export class Species extends BaseEntity implements ISpecies {
   name!: string;
 
   @Column()
+  distribution!: string;
+  @Column()
+  description!: string;
+  @Column()
   genus_id!: number;
 
   @ManyToOne(() => Genus, genus => genus.species)
